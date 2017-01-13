@@ -50,6 +50,9 @@
     <ClCompile Include="GeneratedFiles\qrc_imagepro.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="imagepro.h">
@@ -65,6 +68,12 @@
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_imagepro.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PicChange.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

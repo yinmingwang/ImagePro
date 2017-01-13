@@ -3,7 +3,10 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_imagepro.h"
-
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <QLabel>
+using namespace cv;
 class ImagePro : public QMainWindow
 {
 	Q_OBJECT
@@ -27,13 +30,14 @@ private:
 	QMenu * fileMenu;
 	QMenu * editMenu;
 	QMenu * helpMenu;
+	QMenu * selectFun;
 	QToolBar *fileToolBar;
 	QToolBar *editToolBar;
 	//定义了file的下拉菜单
 	QAction *openAction;
 	QAction *saveAction;
 	QAction *saveAsAction;
-	QAction *exitAction;
+	QAction *exitAction; 
 	//定义edit的下拉菜单
 	QAction *cutAction;
 	QAction *copyAction;
@@ -41,7 +45,9 @@ private:
 	//定义help的下拉菜单about aboutQt
 	QAction *aboutAction;
 	QAction *aboutImageProAction;
-	Ui::ImageProClass ui;
+	//label
+	QLabel *srclabel;
+	ImagePro *ui;
 };
 
 #endif // IMAGEPRO_H

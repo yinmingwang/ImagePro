@@ -91,6 +91,7 @@
     <ClCompile Include="GeneratedFiles\Release\moc_imagepro.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Image.cpp" />
     <ClCompile Include="imagepro.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -120,6 +121,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_imagepro.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="PicChange.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="imagepro.qrc">
