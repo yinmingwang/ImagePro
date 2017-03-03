@@ -132,11 +132,16 @@ void ImagePro::showhistogram(){
 	Mat image1 = QImage2Mat(image);
 	Mat histogramimg = Showhist(image1);
 	Mat images = Resize(histogramimg, 300, 420);
-	imshow("his", histogramimg);
-	image = Mat2QImage(histogramimg);
+	//imwrite("2.jpg", images);
+	//imshow("his", histogramimg);
+    image = Mat2QImage(images);
 	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->alignment();
+	//Prolabel->alignment();
+	qDebug() << "hello" << endl;
+	Prolabel->setVisible(true);
 	Prolabel->show();
+	qDebug() << "show" << endl;
+	
 }
 void ImagePro::createActions(){
 	//openAction

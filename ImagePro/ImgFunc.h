@@ -73,15 +73,14 @@ int otsu(Mat img) {
 }
 Mat Showhist(Mat srcimage) {
 	cvtColor(srcimage, srcimage, CV_BGR2GRAY);
-	int threshold = otsu(srcimage);
-	MatND hist;
+	/*MatND hist;
 	int nbins = 256;
 	int hsize[] = { nbins };
 	float range[] = { 0, 256 };
 	const float* ranges[] = { range };
 	calcHist(&srcimage, 1, 0, Mat(), hist, 1, hsize, ranges);
-	int hist_w = 512;
-	int hist_h = 400;
+	int hist_w = 500;
+	int hist_h = 420;
 	int bin_w = cvRound((double)hist_w / nbins);
 	Mat hisimage(hist_h, hist_w, CV_32FC3, Scalar(0, 0, 0));
 	normalize(hist, hist, 0, hisimage.rows, NORM_MINMAX, -1, Mat());
@@ -91,5 +90,36 @@ Mat Showhist(Mat srcimage) {
 			Scalar(255, 255, 255), 2, 8, 0);
 	}
 	//imshow("histogram", hisimage);
-	return hisimage;
+	return hisimage;*/
+	MatND hist;
+	int bins = 256;
+	int hist_size[] = { bins };
+	float range[] = { 0, 256 };
+	const float* ranges[] = { range };
+	int channels[] = { 0 };
+	//计算直方图  
+	calcHist(&srcimage, 1, channels, Mat(), // do not use mask    
+		hist, 1, hist_size, ranges,
+		true, // the histogram is uniform    
+		false);
+
+	//绘制直方图图像  
+	int hist_height = 420;
+	//int bins = 256;  
+	double max_val;  //直方图的最大值  
+	int scale = 1;   //直方图的宽度  
+	minMaxLoc(hist, 0, &max_val, 0, 0); //计算直方图最大值  
+
+	Mat hist_img = Mat::zeros(hist_height, bins*scale, CV_8UC3); //创建一个直方图图像并初始化为0   
+	//在直方图图像中写入直方图数据  
+	for (int i = 0; i<bins; i++)
+	{
+		float bin_val = hist.at<float>(i); // 第i灰度级上的数      
+		int intensity = cvRound(bin_val*hist_height / max_val);  //要绘制的高度    
+		//填充第i灰度级的数据  
+		rectangle(hist_img, Point(i*scale, hist_height - 1),
+			Point((i + 1)*scale - 1, hist_height - intensity),
+			CV_RGB(255,255,255));
+	}
+	return hist_img;
 }
