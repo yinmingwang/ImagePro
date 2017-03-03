@@ -14,8 +14,9 @@ class ImagePro : public QMainWindow
 public:
 	ImagePro(QWidget *parent = 0);
 	~ImagePro();
-
-private:
+signals:
+	void size(int, int);
+public:
 	//函数
 	void openFile();
 	void saveFile();
@@ -26,6 +27,10 @@ private:
 	void createActions();
 	void createMenus();
 	void createToolBars();
+	void scale(int, int);
+	void rgbTogray();
+	void rgbTobinary();
+	void scaleBox();
 	//菜单栏 工具栏
 	QMenu * fileMenu;
 	QMenu * editMenu;
@@ -45,9 +50,17 @@ private:
 	//定义help的下拉菜单about aboutQt
 	QAction *aboutAction;
 	QAction *aboutImageProAction;
+	//功能选择
+	QAction *scaleAction;
+	QAction *rotateAction;
+	QAction *tograyAction;
+	QAction *tobinaryAction;
+	QAction *showHistogramAction;
 	//label
 	QLabel *srclabel;
+	QLabel *Prolabel;
 	ImagePro *ui;
+	//Mat Image;
 };
 
 #endif // IMAGEPRO_H

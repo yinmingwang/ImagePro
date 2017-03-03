@@ -122,6 +122,7 @@
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_imagepro.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="ImgFunc.h" />
     <ClInclude Include="PicChange.h" />
   </ItemGroup>
   <ItemGroup>

@@ -6,5 +6,8 @@
         <file>Resources/images/cut.png</file>
         <file>Resources/images/paste.png</file>
         <file>Resources/images/exit.png</file>
+        <file>Resources/images/scale.png</file>
+        <file>Resources/images/rotate.png</file>
+        <file>Resources/images/gray.png</file>
     </qresource>
 </RCC>
