@@ -31,6 +31,7 @@ public:
 	void rgbTogray();
 	void rgbTobinary();
 	void scaleBox();
+	void showhistogram();
 	//菜单栏 工具栏
 	QMenu * fileMenu;
 	QMenu * editMenu;
@@ -47,6 +48,8 @@ public:
 	QAction *cutAction;
 	QAction *copyAction;
 	QAction *pasteAction;
+	QAction *selectpicAction;
+	QAction *showhisAction;
 	//定义help的下拉菜单about aboutQt
 	QAction *aboutAction;
 	QAction *aboutImageProAction;

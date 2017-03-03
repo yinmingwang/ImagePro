@@ -127,6 +127,17 @@ void ImagePro::rgbTobinary() {
 	Prolabel->alignment();
 	Prolabel->show();
 }
+void ImagePro::showhistogram(){
+	QImage image = srclabel->pixmap()->toImage();
+	Mat image1 = QImage2Mat(image);
+	Mat histogramimg = Showhist(image1);
+	Mat images = Resize(histogramimg, 300, 420);
+	imshow("his", histogramimg);
+	image = Mat2QImage(histogramimg);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->alignment();
+	Prolabel->show();
+}
 void ImagePro::createActions(){
 	//openAction
 	openAction = new QAction(QIcon("./Resources/images/open.png"), tr("&打开"), this);
@@ -152,6 +163,9 @@ void ImagePro::createActions(){
 	exitAction->setShortcut(QKeySequence::Close);
 	exitAction->setStatusTip(tr("退出当前窗口"));
 	connect(exitAction, &QAction::triggered, this, &ImagePro::exitFile);
+	//select picture
+	selectpicAction = new QAction(tr("选择图像"), this);
+	selectpicAction->setStatusTip(tr("选择要处理的图片"));
 	//scale
 	scaleAction = new QAction(QIcon("./Resources/images/scale.png"),tr("&缩放"), this);
 	scaleAction->setShortcut(QKeySequence::ZoomIn);
@@ -165,6 +179,10 @@ void ImagePro::createActions(){
 	tobinaryAction = new QAction(tr("二值化"),this);
 	tobinaryAction->setStatusTip(tr("把图片转化为二值图像"));
 	connect(tobinaryAction, &QAction::triggered, this, &ImagePro::rgbTobinary);
+	//show histogram
+	showhisAction = new QAction(tr("直方图"), this);
+	showhisAction->setStatusTip(tr("显示当前图像直方图"));
+	connect(showhisAction, &QAction::triggered, this, &ImagePro::showhistogram);
 	statusBar();
 }
 void ImagePro::createMenus(){
@@ -176,11 +194,13 @@ void ImagePro::createMenus(){
 	editMenu = menuBar()->addMenu(tr("&编辑"));
 	editMenu->addAction(copyAction);
 	editMenu->addAction(pasteAction);
+	editMenu->addAction(selectpicAction);
 	//function
 	selectFun = menuBar()->addMenu(tr("&工具"));
 	selectFun->addAction(scaleAction);
 	selectFun->addAction(tograyAction);
 	selectFun->addAction(tobinaryAction);
+	selectFun->addAction(showhisAction);
 	//help
 	helpMenu = menuBar()->addMenu(tr("&帮助"));
 	/*helpMenu->addAction(aboutAction);

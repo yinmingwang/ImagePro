@@ -71,3 +71,25 @@ int otsu(Mat img) {
 	//cout << maxthreshold << endl;
 	return maxthreshold;
 }
+Mat Showhist(Mat srcimage) {
+	cvtColor(srcimage, srcimage, CV_BGR2GRAY);
+	int threshold = otsu(srcimage);
+	MatND hist;
+	int nbins = 256;
+	int hsize[] = { nbins };
+	float range[] = { 0, 256 };
+	const float* ranges[] = { range };
+	calcHist(&srcimage, 1, 0, Mat(), hist, 1, hsize, ranges);
+	int hist_w = 512;
+	int hist_h = 400;
+	int bin_w = cvRound((double)hist_w / nbins);
+	Mat hisimage(hist_h, hist_w, CV_32FC3, Scalar(0, 0, 0));
+	normalize(hist, hist, 0, hisimage.rows, NORM_MINMAX, -1, Mat());
+	for (int i = 1; i < nbins; ++i) {
+		line(hisimage, Point(bin_w * (i - 1), hist_h - cvRound(hist.at<float>(i - 1))),
+			Point(bin_w * (i), hist_h - cvRound(hist.at<float>(i))),
+			Scalar(255, 255, 255), 2, 8, 0);
+	}
+	//imshow("histogram", hisimage);
+	return hisimage;
+}
