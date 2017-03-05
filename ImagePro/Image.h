@@ -24,22 +24,4 @@ private:
 	QImage qimage;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif

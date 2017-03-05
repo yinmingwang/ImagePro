@@ -93,6 +93,7 @@
     </ClCompile>
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="imagepro.cpp" />
+    <ClCompile Include="inputimgdialog.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +124,20 @@
     <ClInclude Include="GeneratedFiles\ui_imagepro.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="ImgFunc.h" />
+    <CustomBuild Include="inputimgdialog.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </Command>
+    </CustomBuild>
     <ClInclude Include="PicChange.h" />
   </ItemGroup>
   <ItemGroup>

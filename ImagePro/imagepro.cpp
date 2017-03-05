@@ -19,6 +19,7 @@
 #include <QTextCodec>
 #include "PicChange.h"
 #include "ImgFunc.h"
+#include "inputimgdialog.h"
 using namespace std;
 using namespace cv;
 #pragma execution_character_set("utf-8")
@@ -86,6 +87,7 @@ void ImagePro::saveFile(){
 	//if (srclabel->text == "") {
 		//QMessageBox::information(this, tr("警告"), tr("没有任何图像可以保存"));
 	//}
+	
     QImage image = Prolabel->pixmap()->toImage();
 	if (image.height() == 0 || image.width() == 0) {
 		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以保存"));
@@ -101,8 +103,18 @@ void ImagePro::saveFile(){
 			tr("Images (*.png *.bmp *.jpg *.tif *.GIF"));
 		string SavePath = string((const char *)savepath.toLocal8Bit());
 		//imshow("show", matimage);
-		imwrite(SavePath, saveimage);
-		QMessageBox::information(this, tr("提示"), tr("保存成功"));
+		if (!SavePath.empty()) {
+			imwrite(SavePath, saveimage);
+			QMessageBox::information(this, tr("提示"), tr("保存成功"));
+		}
+		else {
+			QMessageBox::information(this, tr("提示"), tr("保存失败"));
+			close();
+		}
+		//inputimgDialog w;
+		//w.show();
+		//imwrite(SavePath, saveimage);
+		
 	}
 	
 }
