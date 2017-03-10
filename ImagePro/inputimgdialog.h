@@ -1,3 +1,5 @@
+#ifndef INPUTIMGDIALOG_H
+#define INPUTIMGDIALOG_H
 #include <QtWidgets/QMainWindow>
 #include <QLineEdit>
 #include <opencv2/core/core.hpp>
@@ -9,14 +11,20 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QDialog>
+#include "imagepro.h"
 #pragma execution_character_set("utf-8")
 using namespace cv;
 using namespace std;
 class  inputimgDialog : public QWidget
 {
+	Q_OBJECT
+
 public:
 	inputimgDialog();
 	~inputimgDialog();
+	int getheightvalue();
+	int getwidthvalue();
+	void done();
 
 private:
 	QLineEdit *inputwidth;
@@ -27,7 +35,9 @@ private:
 	QVBoxLayout *mainLayout;
 	QLabel *width;
 	QLabel *height;
-	QPushButton *sure;
 	QWidget *window;
+	QPushButton *sure;
+	//ImagePro *imagepro;
 
 };
+#endif

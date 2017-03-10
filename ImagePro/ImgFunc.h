@@ -6,29 +6,30 @@
 #include <QImage>  
 #include <QPixmap> 
 #include <qDebug>
+
 using namespace cv;
 using namespace std;
-Mat Resize(Mat srcimg, int width, int height){
+inline Mat Resize(Mat srcimg, int width, int height){
 	Size Newsize = Size(width, height);
 	Mat Reimg = Mat(Newsize, CV_32S);
 	resize(srcimg, Reimg,Newsize);
 	return Reimg;
 }
-Mat Togray(Mat srcimage) {
+inline Mat Togray(Mat srcimage) {
 	Mat grayimage;
 	cvtColor(srcimage, grayimage, CV_BGR2GRAY);
 	return grayimage;
 }
-Mat Tobinary(Mat srcimage) {
+inline Mat Tobinary(Mat srcimage) {
 	Mat binaryiamge;
 	Mat grayimage;
 	cvtColor(srcimage, grayimage, CV_BGR2GRAY);
 	//threshold(grayimage, binaryiamge, 150, 255, THRESH_BINARY);
-	adaptiveThreshold(grayimage, binaryiamge, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 9, 5);
+	adaptiveThreshold(grayimage, binaryiamge, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 7, 5);
 	//CV_ADAPTIVE_THRESH_MEAN_C CV_ADAPTIVE_THRESH_GAUSSIAN_C
 	return binaryiamge;
 }
-int otsu(Mat img) {
+inline int otsu(Mat img) {
 	int histogram[256] = { 0 };
 	double probability[256] = { 0.0 };
 	/*计算灰度直方图*/
@@ -71,26 +72,8 @@ int otsu(Mat img) {
 	//cout << maxthreshold << endl;
 	return maxthreshold;
 }
-Mat Showhist(Mat srcimage) {
+inline Mat Showhist(Mat srcimage) {
 	cvtColor(srcimage, srcimage, CV_BGR2GRAY);
-	/*MatND hist;
-	int nbins = 256;
-	int hsize[] = { nbins };
-	float range[] = { 0, 256 };
-	const float* ranges[] = { range };
-	calcHist(&srcimage, 1, 0, Mat(), hist, 1, hsize, ranges);
-	int hist_w = 500;
-	int hist_h = 420;
-	int bin_w = cvRound((double)hist_w / nbins);
-	Mat hisimage(hist_h, hist_w, CV_32FC3, Scalar(0, 0, 0));
-	normalize(hist, hist, 0, hisimage.rows, NORM_MINMAX, -1, Mat());
-	for (int i = 1; i < nbins; ++i) {
-		line(hisimage, Point(bin_w * (i - 1), hist_h - cvRound(hist.at<float>(i - 1))),
-			Point(bin_w * (i), hist_h - cvRound(hist.at<float>(i))),
-			Scalar(255, 255, 255), 2, 8, 0);
-	}
-	//imshow("histogram", hisimage);
-	return hisimage;*/
 	MatND hist;
 	int bins = 256;
 	int hist_size[] = { bins };
@@ -122,4 +105,11 @@ Mat Showhist(Mat srcimage) {
 			CV_RGB(255,255,255));
 	}
 	return hist_img;
+}
+
+inline Mat ScaleImage(Mat srcimg, int h, int w){
+	Size dsize = Size(h, w);
+	Mat scaleimage = Mat(dsize, CV_32S);
+	resize(srcimg, scaleimage, dsize);
+	return scaleimage;
 }

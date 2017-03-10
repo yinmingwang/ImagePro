@@ -8,7 +8,7 @@
 #include <qDebug>
 using namespace cv;
 using namespace std;
-QImage Mat2QImage(const cv::Mat& mat)
+inline QImage Mat2QImage(const cv::Mat& mat)
 {
 	// 8-bits unsigned, NO. OF CHANNELS = 1  
 	if (mat.type() == CV_8UC1)
@@ -54,7 +54,7 @@ QImage Mat2QImage(const cv::Mat& mat)
 		return QImage();
 	}
 }
-cv::Mat QImage2Mat(QImage image)
+inline Mat QImage2Mat(QImage image)
 {
 	cv::Mat mat;
 	qDebug() << image.format();
@@ -74,8 +74,4 @@ cv::Mat QImage2Mat(QImage image)
 		break;
 	}
 	return mat;
-}
-
-void test() {
-	qDebug() << "hello test";
 }

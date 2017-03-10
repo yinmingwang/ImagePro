@@ -7,6 +7,7 @@
 #include <QDialog>
 #include <QFileDialog>
 #include <opencv2/core/core.hpp>
+#include<opencv2/opencv.hpp> 
 #include <opencv2/highgui/highgui.hpp>
 #include <QFileDialog>
 #include <qDebug>
@@ -19,22 +20,30 @@
 #include <QTextCodec>
 #include "PicChange.h"
 #include "ImgFunc.h"
-#include "inputimgdialog.h"
 using namespace std;
 using namespace cv;
 #pragma execution_character_set("utf-8")
 QImage qimage;
 Mat matimage;
+int rowsize = 0;
+int colsize = 0;
+QLabel *srclabel;
+QLabel *Prolabel;
 ImagePro::ImagePro(QWidget *parent)
 	: QMainWindow(parent)
 {
-	setWindowTitle(tr("Main Window"));
-	setMaximumSize(800, 520);
-	setMinimumSize(800, 520);
+	setWindowTitle(tr("Eric"));
+	setMaximumSize(1000, 1200);
+	setMinimumSize(1000, 1200);
 	srclabel = new QLabel(this);
 	Prolabel = new QLabel(this);
-	srclabel->setGeometry(5, 60, 600, 450);
-	Prolabel->setGeometry(450, 60, 600, 450);
+	srcscroll = new QScrollArea(this);
+	Proscroll = new QScrollArea(this);
+	srcscroll->setGeometry(15, 60, 420, 550);
+	Proscroll->setGeometry(500, 60, 420, 550);
+	srcscroll->setWidget(srclabel);
+	Proscroll->setWidget(Prolabel);
+	srcscroll->show();
 	createActions();
 	createMenus();
 	createToolBars();
@@ -45,6 +54,7 @@ ImagePro::~ImagePro()
 }
 void ImagePro::openFile()
 {
+	Mat images;
 	QString openpath = QFileDialog::getOpenFileName(this,
 		tr("Select"),
 		"",
@@ -55,14 +65,16 @@ void ImagePro::openFile()
 	else{
 		string  OpenPath = string((const char *)openpath.toLocal8Bit());
 		Mat image1 = imread(OpenPath);
-		matimage = image1;
-		if (image1.cols > 420 || image1.rows > 300) {
+		//matimage = image1;
+		qDebug() << image1.cols << " " << image1.rows << endl;
+		if (image1.cols > 600 || image1.rows > 420) {
 			QMessageBox::information(this, tr("提示"), tr("图像过大，已经缩小为合适大小显示"));
+			images = image1;
 		}
-		else if (image1.cols < 420 || image1.rows < 300) {
-			QMessageBox::information(this, tr("提示"), tr("图像过小，已经放大为合适大小显示"));
+		else {
+			images = image1;
 		}
-		Mat images = Resize(image1, 300, 420);
+		
 		if (images.empty()) {
 			QMessageBox::information(this,
 				tr("打开图像失败"),
@@ -73,13 +85,9 @@ void ImagePro::openFile()
 			QImage image = Mat2QImage(images);
 			qimage = image;
 			srclabel->setPixmap(QPixmap::fromImage(image));
-			//srclabel->resize(QSize(500, 300));
-			//Prolabel->setPixmap(QPixmap::fromImage(image));
-			srclabel->alignment();
-			//Prolabel->alignment();
-			//Prolabel->show();
+			srclabel->resize(QSize(image.width(), image.height()));
 			srclabel->show();
-			//ui->scroll->setWidget(label);
+			Prolabel->clear();
 		}
 	}
 }
@@ -111,9 +119,6 @@ void ImagePro::saveFile(){
 			QMessageBox::information(this, tr("提示"), tr("保存失败"));
 			close();
 		}
-		//inputimgDialog w;
-		//w.show();
-		//imwrite(SavePath, saveimage);
 		
 	}
 	
@@ -127,6 +132,7 @@ void ImagePro::rgbTogray() {
 	Mat tempimg = Togray(image1);
 	image = Mat2QImage(tempimg);
 	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
 	Prolabel->alignment();
 	Prolabel->show();
 }
@@ -136,6 +142,7 @@ void ImagePro::rgbTobinary() {
 	Mat tempimg = Tobinary(image1);
 	image = Mat2QImage(tempimg);
 	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
 	Prolabel->alignment();
 	Prolabel->show();
 }
@@ -143,17 +150,45 @@ void ImagePro::showhistogram(){
 	QImage image = srclabel->pixmap()->toImage();
 	Mat image1 = QImage2Mat(image);
 	Mat histogramimg = Showhist(image1);
-	Mat images = Resize(histogramimg, 300, 420);
-	//imwrite("2.jpg", images);
-	//imshow("his", histogramimg);
-    image = Mat2QImage(images);
+	image = Mat2QImage(histogramimg);
 	Prolabel->setPixmap(QPixmap::fromImage(image));
-	//Prolabel->alignment();
-	qDebug() << "hello" << endl;
-	Prolabel->setVisible(true);
+	Prolabel->resize(QSize(image.width(), image.height()));
 	Prolabel->show();
-	qDebug() << "show" << endl;
 	
+}
+/*QLabel* ImagePro::getProlabel() {
+		return Prolabel;
+}
+QLabel* ImagePro::getsrclabel() {
+	
+	return srclabel;
+}*/
+void  scale(int w, void*) {
+	
+	Mat image1 = QImage2Mat(qimage);
+	//imshow("hello", image1);
+	//Mat scaleimage;
+	cv::resize(image1, image1, Size(colsize, rowsize), 0, 0, 3);
+	QImage  image = Mat2QImage(image1);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->show();
+	//imshow("test", image1);
+}
+void ImagePro::scaleimg() {
+	QImage image = srclabel->pixmap()->toImage();
+	//inputimgDialog *inputdia = new inputimgDialog;
+	Mat image1 = QImage2Mat(image);
+	rowsize = image1.rows/2;
+	colsize = image1.cols/2;
+	std::string str = "滚动条";
+	QString strQ = QString::fromLocal8Bit(str.c_str());
+	namedWindow(str);
+	createTrackbar("rows", "滚动条", &rowsize, image1.rows * 2, scale);
+	createTrackbar("cols", "滚动条", &colsize, image1.cols * 2, scale);
+}
+void ImagePro::rotateimage() {
+
 }
 void ImagePro::createActions(){
 	//openAction
@@ -187,6 +222,7 @@ void ImagePro::createActions(){
 	scaleAction = new QAction(QIcon("./Resources/images/scale.png"),tr("&缩放"), this);
 	scaleAction->setShortcut(QKeySequence::ZoomIn);
 	scaleAction->setStatusTip(tr("对当前图像进行缩放"));
+	connect(scaleAction, &QAction::triggered, this, &ImagePro::scaleimg);
 	//togary picture
 	tograyAction = new QAction(tr("&灰度图"), this);
 	tograyAction->setShortcut(QKeySequence::Quit);
@@ -200,6 +236,10 @@ void ImagePro::createActions(){
 	showhisAction = new QAction(tr("直方图"), this);
 	showhisAction->setStatusTip(tr("显示当前图像直方图"));
 	connect(showhisAction, &QAction::triggered, this, &ImagePro::showhistogram);
+	//rotate picture
+	rotateAction = new QAction(tr("选择"), this);
+	rotateAction->setStatusTip(tr("旋转当前图片"));
+	connect(rotateAction, &QAction::triggered, this, &ImagePro::rotateimage);
 	statusBar();
 }
 void ImagePro::createMenus(){
@@ -218,6 +258,7 @@ void ImagePro::createMenus(){
 	selectFun->addAction(tograyAction);
 	selectFun->addAction(tobinaryAction);
 	selectFun->addAction(showhisAction);
+	selectFun->addAction(rotateAction);
 	//help
 	helpMenu = menuBar()->addMenu(tr("&帮助"));
 	/*helpMenu->addAction(aboutAction);
@@ -235,5 +276,4 @@ void ImagePro::createToolBars(){
 	editToolBar->addAction(copyAction);
 	//editToolBar->addAction(cutAction);
 	editToolBar->addAction(pasteAction);
-
 }
