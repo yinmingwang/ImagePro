@@ -36,7 +36,6 @@ public:
 	void scaleBox();
 	void showhistogram();
 	void scaleimg();
-
 	void rotateimage();
 private:
 	//²Ëµ¥À¸ ¹¤¾ßÀ¸

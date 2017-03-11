@@ -27,6 +27,7 @@ QImage qimage;
 Mat matimage;
 int rowsize = 0;
 int colsize = 0;
+int rotateangle = 0;
 QLabel *srclabel;
 QLabel *Prolabel;
 ImagePro::ImagePro(QWidget *parent)
@@ -168,7 +169,16 @@ void  scale(int w, void*) {
 	Mat image1 = QImage2Mat(qimage);
 	//imshow("hello", image1);
 	//Mat scaleimage;
-	cv::resize(image1, image1, Size(colsize, rowsize), 0, 0, 3);
+	if (colsize < 10)
+	{
+		//QMessageBox::warning(NULL,QObject::tr("高度"), QObject::tr("高度不能小于10"));
+		colsize = 10;
+	}
+	else if (rowsize < 10) {
+		//QMessageBox::warning(NULL, QObject::tr("宽度"), QObject::tr("宽度不能小于10"));
+		rowsize = 10;
+	}
+ 	cv::resize(image1, image1, Size(colsize, rowsize), 0, 0, 3);
 	QImage  image = Mat2QImage(image1);
 	Prolabel->setPixmap(QPixmap::fromImage(image));
 	Prolabel->resize(QSize(image.width(), image.height()));
@@ -181,14 +191,24 @@ void ImagePro::scaleimg() {
 	Mat image1 = QImage2Mat(image);
 	rowsize = image1.rows/2;
 	colsize = image1.cols/2;
-	std::string str = "滚动条";
-	QString strQ = QString::fromLocal8Bit(str.c_str());
-	namedWindow(str);
-	createTrackbar("rows", "滚动条", &rowsize, image1.rows * 2, scale);
-	createTrackbar("cols", "滚动条", &colsize, image1.cols * 2, scale);
+	//QString strQ = QString::fromLocal8Bit(str.c_str());
+	namedWindow("ScaleBox");
+	createTrackbar("rows", "ScaleBox", &rowsize, image1.rows * 2, scale);
+	createTrackbar("cols", "ScaleBox", &colsize, image1.cols * 2, scale);
+}
+void rotate(int, void*) {
+	Mat image1 = QImage2Mat(qimage);
+	Mat roimage = rotation(image1, rotateangle);
+	QImage  image = Mat2QImage(roimage);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->show();
 }
 void ImagePro::rotateimage() {
-
+	QImage image = srclabel->pixmap()->toImage();
+	Mat image1 = QImage2Mat(image);
+	namedWindow("RotateBox");
+	createTrackbar("angle", "RotateBox", &rotateangle, 360, rotate);
 }
 void ImagePro::createActions(){
 	//openAction
@@ -237,7 +257,7 @@ void ImagePro::createActions(){
 	showhisAction->setStatusTip(tr("显示当前图像直方图"));
 	connect(showhisAction, &QAction::triggered, this, &ImagePro::showhistogram);
 	//rotate picture
-	rotateAction = new QAction(tr("选择"), this);
+	rotateAction = new QAction(tr("旋转"), this);
 	rotateAction->setStatusTip(tr("旋转当前图片"));
 	connect(rotateAction, &QAction::triggered, this, &ImagePro::rotateimage);
 	statusBar();

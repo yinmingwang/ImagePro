@@ -113,3 +113,32 @@ inline Mat ScaleImage(Mat srcimg, int h, int w){
 	resize(srcimg, scaleimage, dsize);
 	return scaleimage;
 }
+
+inline Mat rotation(Mat srcImg, double angle) {
+	Mat tempImg;
+	CV_Assert(!srcImg.empty());
+	float radian = (float)(angle / 180.0 * CV_PI);
+	//填充图像使其符合旋转要求
+	int uniSize = (int)(max(srcImg.cols, srcImg.rows)* 1.414);
+	int dx = (int)(uniSize - srcImg.cols) / 2;
+	int dy = (int)(uniSize - srcImg.rows) / 2;
+	copyMakeBorder(srcImg, tempImg, dy, dy, dx, dx, BORDER_CONSTANT);
+	//旋转中心
+	Point2f center((float)(tempImg.cols / 2), (float)(tempImg.rows / 2));
+	Mat affine_matrix = getRotationMatrix2D(center, angle, 1.0);
+	//旋转
+	warpAffine(tempImg, tempImg, affine_matrix, tempImg.size());
+	//旋转后的图像大小
+	float sinVal = fabs(sin(radian));
+	float cosVal = fabs(cos(radian));
+	Size targetSize((int)(srcImg.cols * cosVal + srcImg.rows * sinVal),
+		(int)(srcImg.cols * sinVal + srcImg.rows * cosVal));
+
+	//剪掉四周边框
+	int x = (tempImg.cols - targetSize.width) / 2;
+	int y = (tempImg.rows - targetSize.height) / 2;
+	Rect rect(x, y, targetSize.width, targetSize.height);
+	tempImg = Mat(tempImg, rect);
+	//imshow("Show", tempImg);
+	return tempImg;
+}
