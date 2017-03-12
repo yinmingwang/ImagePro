@@ -39,12 +39,14 @@ public:
 	void rotateimage();
 	void flipimage();
 	void reverseimage();
+	void contrastAndbright();
 private:
 	//菜单栏 工具栏
-	QMenu * fileMenu;
-	QMenu * editMenu;
-	QMenu * helpMenu;
-	QMenu * selectFun;
+	QMenu *fileMenu;
+	QMenu *editMenu;
+	QMenu *helpMenu;
+	QMenu *selectFun;
+	QMenu *edgedetection;
 	QToolBar *fileToolBar;
 	QToolBar *editToolBar;
 	//定义了file的下拉菜单
@@ -69,7 +71,11 @@ private:
 	QAction *showHistogramAction;
 	QAction *flipAction;
 	QAction *reverseAction;
-	//label
+	QAction *contrastandbrightAction;
+	//edge detection
+	QAction *LaplacianAction;
+	QAction *SobelAction;
+	QAction *ScharrAction;
 	
 	//inputimgDialog *inputdia;
 	ImagePro *ui;

@@ -27,6 +27,8 @@ QImage qimage;
 Mat matimage;
 int rowsize = 0;
 int colsize = 0;
+int contrastvalue = 0;
+int brightvalue = 0;
 int rotateangle = 0;
 QLabel *srclabel;
 QLabel *Prolabel;
@@ -192,7 +194,7 @@ void ImagePro::scaleimg() {
 	rowsize = image1.rows/2;
 	colsize = image1.cols/2;
 	//QString strQ = QString::fromLocal8Bit(str.c_str());
-	namedWindow("ScaleBox");
+	namedWindow("ScaleBox",1);
 	createTrackbar("rows", "ScaleBox", &rowsize, image1.rows * 2, scale);
 	createTrackbar("cols", "ScaleBox", &colsize, image1.cols * 2, scale);
 }
@@ -216,7 +218,7 @@ Mat reverseimg(Mat srcimage) {
 void ImagePro::rotateimage() {
 	QImage image = srclabel->pixmap()->toImage();
 	Mat image1 = QImage2Mat(image);
-	namedWindow("RotateBox");
+	namedWindow("RotateBox",1);
 	createTrackbar("angle", "RotateBox", &rotateangle, 360, rotate);
 }
 void ImagePro::flipimage() {
@@ -248,6 +250,27 @@ void ImagePro::reverseimage() {
 	Prolabel->resize(QSize(image.width(), image.height()));
 	Prolabel->alignment();
 	Prolabel->show();
+}
+void ModifiyContrastAndBright(int, void*) {
+	Mat image1 = QImage2Mat(qimage);
+	/*if (contrastvalue <= 0) {
+		contrastvalue = 1;
+	}
+	if (brightvalue <= 0) {
+		brightvalue = 1;
+	}*/
+	Mat CAB = ChangeContrastAndBright(image1, contrastvalue, brightvalue);
+	QImage  image = Mat2QImage(CAB);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->show();
+}
+void ImagePro::contrastAndbright() {
+	contrastvalue = 80;
+	brightvalue = 80;
+	namedWindow("ContrastAndBrightBox", 1);
+	createTrackbar("ContrastValue", "ContrastAndBrightBox", &contrastvalue, 300, ModifiyContrastAndBright);
+	createTrackbar("BrightValue", "ContrastAndBrightBox", &brightvalue, 300, ModifiyContrastAndBright);
 }
 void ImagePro::createActions(){
 	//openAction
@@ -307,6 +330,14 @@ void ImagePro::createActions(){
 	reverseAction = new QAction(tr("反色"), this);
 	reverseAction->setStatusTip(tr("生成反色图像"));
 	connect(reverseAction, &QAction::triggered, this, &ImagePro::reverseimage);
+	//modifiy picture
+	contrastandbrightAction = new QAction(tr("对比度和亮度"), this);
+	contrastandbrightAction->setStatusTip(tr("调整对比度和凉度"));
+	connect(contrastandbrightAction, &QAction::triggered, this, &ImagePro::contrastAndbright);
+	//edge detection
+	LaplacianAction = new QAction(tr("Laplacian"), this);
+	SobelAction = new QAction(tr("Sobel"), this);
+	ScharrAction = new QAction(tr("Scharr"), this);
 	statusBar();
 }
 void ImagePro::createMenus(){
@@ -315,12 +346,17 @@ void ImagePro::createMenus(){
 	fileMenu->addAction(openAction);
 	fileMenu->addAction(saveAction);
 	fileMenu->addAction(exitAction);
+	//edit
 	editMenu = menuBar()->addMenu(tr("&编辑"));
 	editMenu->addAction(copyAction);
 	editMenu->addAction(pasteAction);
 	editMenu->addAction(selectpicAction);
 	//function
 	selectFun = menuBar()->addMenu(tr("&工具"));
+	edgedetection = new QMenu(tr("&边缘检测"));
+	edgedetection->addAction(LaplacianAction);
+	edgedetection->addAction(SobelAction);
+	edgedetection->addAction(ScharrAction);
 	selectFun->addAction(scaleAction);
 	selectFun->addAction(tograyAction);
 	selectFun->addAction(tobinaryAction);
@@ -328,6 +364,8 @@ void ImagePro::createMenus(){
 	selectFun->addAction(rotateAction);
 	selectFun->addAction(flipAction);
 	selectFun->addAction(reverseAction);
+	selectFun->addAction(contrastandbrightAction);
+	selectFun->addMenu(edgedetection);
 	//help
 	helpMenu = menuBar()->addMenu(tr("&帮助"));
 	/*helpMenu->addAction(aboutAction);

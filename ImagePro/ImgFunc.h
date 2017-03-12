@@ -160,3 +160,14 @@ inline Mat FlipImages(Mat srcimage) {
 	remap(srcimage, flipimage, map_x, map_y, CV_INTER_LINEAR);
 	return flipimage;
 }
+inline Mat ChangeContrastAndBright(Mat srcimage, int contrastvalue, int brightvalue) {
+	Mat cAb = Mat::zeros(srcimage.size(), srcimage.type());
+	for (int i = 0; i < srcimage.rows; i++) {
+		for (int j = 0; j < srcimage.cols; j++) {
+			for (int k = 0; k < 3; k++) {
+				cAb.at<Vec3b>(i, j)[k] = saturate_cast<uchar>((contrastvalue*0.01)*(srcimage.at<Vec3b>(i, j)[k]) + brightvalue);
+			}
+		}
+	}
+	return cAb;
+}
