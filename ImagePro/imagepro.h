@@ -37,6 +37,8 @@ public:
 	void showhistogram();
 	void scaleimg();
 	void rotateimage();
+	void flipimage();
+	void reverseimage();
 private:
 	//菜单栏 工具栏
 	QMenu * fileMenu;
@@ -62,10 +64,11 @@ private:
 	//功能选择
 	QAction *scaleAction;
 	QAction *rotateAction;
-	//QAction *rotateAction;
 	QAction *tograyAction;
 	QAction *tobinaryAction;
 	QAction *showHistogramAction;
+	QAction *flipAction;
+	QAction *reverseAction;
 	//label
 	
 	//inputimgDialog *inputdia;

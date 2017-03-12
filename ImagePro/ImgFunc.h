@@ -142,3 +142,21 @@ inline Mat rotation(Mat srcImg, double angle) {
 	//imshow("Show", tempImg);
 	return tempImg;
 }
+inline Mat FlipImages(Mat srcimage) {
+	Mat flipimage;
+	flipimage.create(srcimage.size(), srcimage.type());
+	Mat map_x;
+	Mat map_y;
+	map_x.create(srcimage.size(), CV_32FC1);
+	map_y.create(srcimage.size(), CV_32FC1);
+	for (int i = 0; i < srcimage.rows; ++i)
+	{
+		for (int j = 0; j < srcimage.cols; ++j)
+		{
+			map_x.at<float>(i, j) = (float)(srcimage.cols - j);
+			map_y.at<float>(i, j) = (float)i;  
+		}
+	}
+	remap(srcimage, flipimage, map_x, map_y, CV_INTER_LINEAR);
+	return flipimage;
+}

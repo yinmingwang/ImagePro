@@ -204,11 +204,50 @@ void rotate(int, void*) {
 	Prolabel->resize(QSize(image.width(), image.height()));
 	Prolabel->show();
 }
+Mat reverseimg(Mat srcimage) {
+	
+	Mat reverseimages;
+	//channel[0] = srcimage;
+	
+	//merge(channel, 3, reverseimages);
+	//imshow("B", channel[0]);
+	return srcimage;
+}
 void ImagePro::rotateimage() {
 	QImage image = srclabel->pixmap()->toImage();
 	Mat image1 = QImage2Mat(image);
 	namedWindow("RotateBox");
 	createTrackbar("angle", "RotateBox", &rotateangle, 360, rotate);
+}
+void ImagePro::flipimage() {
+	QImage image = srclabel->pixmap()->toImage();
+	Mat image1 = QImage2Mat(image);
+	Mat tempimg = FlipImages(image1);
+	image = Mat2QImage(tempimg);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->alignment();
+	Prolabel->show();
+}
+void ImagePro::reverseimage() {
+	QImage image = srclabel->pixmap()->toImage();
+	Mat image1 = QImage2Mat(image);
+	vector<Mat> channel;
+	split(image1, channel);
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < channel[i].rows; j++) {
+			for (int k = 0; k < channel[i].cols; k++) {
+				channel[i].at<uchar>(j, k) = 255 - channel[i].at<uchar>(j, k);
+			}
+		}
+	}
+	Mat tempimg;
+	merge(channel,tempimg);
+	image = Mat2QImage(tempimg);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->alignment();
+	Prolabel->show();
 }
 void ImagePro::createActions(){
 	//openAction
@@ -260,6 +299,14 @@ void ImagePro::createActions(){
 	rotateAction = new QAction(tr("旋转"), this);
 	rotateAction->setStatusTip(tr("旋转当前图片"));
 	connect(rotateAction, &QAction::triggered, this, &ImagePro::rotateimage);
+	//flip picture
+	flipAction = new QAction(tr("镜像"), this);
+	flipAction->setStatusTip(tr("生成镜像"));
+	connect(flipAction, &QAction::triggered, this, &ImagePro::flipimage);
+	//reverse color
+	reverseAction = new QAction(tr("反色"), this);
+	reverseAction->setStatusTip(tr("生成反色图像"));
+	connect(reverseAction, &QAction::triggered, this, &ImagePro::reverseimage);
 	statusBar();
 }
 void ImagePro::createMenus(){
@@ -279,6 +326,8 @@ void ImagePro::createMenus(){
 	selectFun->addAction(tobinaryAction);
 	selectFun->addAction(showhisAction);
 	selectFun->addAction(rotateAction);
+	selectFun->addAction(flipAction);
+	selectFun->addAction(reverseAction);
 	//help
 	helpMenu = menuBar()->addMenu(tr("&帮助"));
 	/*helpMenu->addAction(aboutAction);
