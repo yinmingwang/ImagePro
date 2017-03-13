@@ -9,5 +9,6 @@
         <file>Resources/images/scale.png</file>
         <file>Resources/images/rotate.png</file>
         <file>Resources/images/gray.png</file>
+        <file>Resources/images/takephoto.png</file>
     </qresource>
 </RCC>

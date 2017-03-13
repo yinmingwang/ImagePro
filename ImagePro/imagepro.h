@@ -41,11 +41,27 @@ public:
 	void reverseimage();
 	void contrastAndbright();
 	void exchangepicture();
+	void opencamera();
+	void takephoto();
 	void edgebyLaplacian();
 	void edgebySobel_X();
 	void edgebySobel_Y();
 	void edgebySobel_XY();
-	void edgebyScharr();
+	void edgebyScharr_X();
+	void edgebyScharr_Y();
+	void edgebyScharr_XY();
+	//Filter
+	//box
+	void Box_Filter();
+	//mean
+	void Mean_Filter();
+	//Gaussian
+	void Gaussian_Filter();
+	//median
+	void Median_Filter();
+	//bilateral
+	void Bilateral_Filter();
+
 private:
 	//菜单栏 工具栏
 	QMenu *fileMenu;
@@ -54,6 +70,12 @@ private:
 	QMenu *selectFun;
 	QMenu *edgedetectionMenu;
 	QMenu *SobelMenu;
+	QMenu *ScharrMenu;
+	//Filter
+	QMenu *FilterMenu;
+	QMenu *linearFilterMenu;
+	QMenu *nonlinearFilterMenu;
+	//toolbar
 	QToolBar *fileToolBar;
 	QToolBar *editToolBar;
 	//定义了file的下拉菜单
@@ -66,7 +88,8 @@ private:
 	QAction *copyAction;
 	QAction *pasteAction;
 	QAction *selectpicAction;
-	QAction *showhisAction;
+	QAction *OpenCameraAction;
+	QAction *TakePhotoAction;
 	//定义help的下拉菜单about aboutQt
 	QAction *aboutAction;
 	QAction *aboutImageProAction;
@@ -82,10 +105,23 @@ private:
 	QAction *Sobel_X_Action;
 	QAction *Sobel_Y_Action;
 	QAction *Sobel_XY_Action;
+	QAction *showhisAction;
 	//edge detection
 	QAction *LaplacianAction;
-	QAction *ScharrAction;
-	
+	QAction *Scharr_X_Action;
+	QAction *Scharr_Y_Action;
+	QAction *Scharr_XY_Action;
+	//Filter
+	//box
+	QAction *Box_FilterAction;
+	//mean
+	QAction *Mean_FilterAction;
+	//Gaussian
+	QAction *Gaussian_FilterAction;
+    //median
+	QAction *Median_FilterAction;
+	//bilateral
+	QAction *Bilateral_FilterAction;
 	//inputimgDialog *inputdia;
 	ImagePro *ui;
 	QScrollArea *srcscroll;

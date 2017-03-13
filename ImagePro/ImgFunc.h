@@ -194,7 +194,7 @@ inline Mat EdgeDetection_Sobel_Y(Mat srcimage) {
 	Mat gradY, absY, grayimage;
 	GaussianBlur(srcimage, srcimage, Size(3, 3), 0, 0, BORDER_DEFAULT);
 	cvtColor(srcimage, grayimage, CV_RGB2GRAY);
-	Sobel(grayimage, gradY, CV_16S, 1, 0, 3, 1, 0, BORDER_DEFAULT);
+	Sobel(grayimage, gradY, CV_16S, 0, 1, 3, 1, 0, BORDER_DEFAULT);
 	convertScaleAbs(gradY, absY);
 	return absY;
 }
@@ -206,6 +206,66 @@ inline Mat EdgeDetection_Sobel(Mat srcimage){
 	convertScaleAbs(gradX, absX);
 	Sobel(grayimage, gradY, CV_16S, 0, 1, 3, 1, 0, BORDER_DEFAULT);
 	convertScaleAbs(gradY, absY);
-	addWeighted(absX, .5, absY, 0.5, 0, sobelimage);
+	addWeighted(absX, 0.5, absY, 0.5, 0, sobelimage);
 	return sobelimage;
+}
+inline Mat EdgeDetecction_Scharr_X(Mat srcimage) {
+	Mat gradX, grayimage;
+	Mat absX;
+	GaussianBlur(srcimage, srcimage, Size(3, 3), 0, 0, BORDER_DEFAULT);
+	cvtColor(srcimage, grayimage, CV_RGB2GRAY);
+	Scharr(grayimage, gradX, CV_16S, 1, 0, 1, 0, BORDER_DEFAULT);
+	convertScaleAbs(gradX, absX);
+	return absX;
+}
+inline Mat EdgeDetecction_Scharr_Y(Mat srcimage) {
+	Mat gradY, absY, grayimage;
+	GaussianBlur(srcimage, srcimage, Size(3, 3), 0, 0, BORDER_DEFAULT);
+	cvtColor(srcimage, grayimage, CV_RGB2GRAY);
+	Scharr(grayimage, gradY, CV_16S, 0, 1, 1, 0, BORDER_DEFAULT);
+	convertScaleAbs(gradY, absY);
+	return absY;
+}
+inline Mat EdgeDetecction_Scharr(Mat srcimage) {
+	Mat gradX, gradY, absX, absY, scharrimage, grayimage;
+	GaussianBlur(srcimage, srcimage, Size(3, 3), 0, 0, BORDER_DEFAULT);
+	cvtColor(srcimage, grayimage, CV_RGB2GRAY);
+	Scharr(grayimage, gradX, CV_16S, 1, 0, 1, 0, BORDER_DEFAULT);
+	convertScaleAbs(gradX, absX);
+	Scharr(grayimage, gradY, CV_16S, 0, 1, 1, 0, BORDER_DEFAULT);
+	convertScaleAbs(gradY, absY);
+	addWeighted(absX, 0.5, absY, 0.5, 0, scharrimage);
+	return scharrimage;
+}
+//filter
+//Box
+inline Mat Fun_Box_Filter(Mat srcimage, int image_size) {
+	Mat Boximage;
+	boxFilter(srcimage, Boximage, -1, Size(image_size+1, image_size+1));
+	return Boximage;
+}
+
+//Mean
+inline Mat Fun_Mean_Filter(Mat srcimage, int image_size) {
+	Mat Meamimage;
+	blur(srcimage, Meamimage, Size(image_size+1, image_size+1), Point(-1, -1));
+	return Meamimage;
+}
+//Gaussian
+inline Mat Fun_Gaussian_Filter(Mat srcimage, int image_size) {
+	Mat Gimage;
+	GaussianBlur(srcimage, Gimage, Size(image_size*2+1, image_size*2+1), 0, 0);
+	return Gimage;
+}
+//Median
+inline Mat Fun_Median_Filter(Mat srcimage, int image_size) {
+	Mat Mimage;
+	medianBlur(srcimage, Mimage, image_size*2+1);
+	return Mimage;
+}
+//Bilateral
+inline Mat Fun_Bilateral_Filter(Mat srcimage, int image_size) {
+	Mat Bimage;
+	bilateralFilter(srcimage, Bimage, image_size, image_size*2, image_size/2);
+	return Bimage;
 }

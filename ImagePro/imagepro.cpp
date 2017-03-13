@@ -30,20 +30,26 @@ int colsize = 0;
 int contrastvalue = 0;
 int brightvalue = 0;
 int rotateangle = 0;
+int BoxValue = 2;
+int MeanValue = 2;
+int GaussianValue = 2;
+int MedianValue = 2;
+int BilateralValue = 2;
 QLabel *srclabel;
 QLabel *Prolabel;
+Mat frame;
 ImagePro::ImagePro(QWidget *parent)
 	: QMainWindow(parent)
 {
 	setWindowTitle(tr("Eric"));
-	setMaximumSize(1000, 1200);
-	setMinimumSize(1000, 1200);
+	setMaximumSize(1350, 700);
+	setMinimumSize(1350, 700);
 	srclabel = new QLabel(this);
 	Prolabel = new QLabel(this);
 	srcscroll = new QScrollArea(this);
 	Proscroll = new QScrollArea(this);
-	srcscroll->setGeometry(15, 60, 420, 550);
-	Proscroll->setGeometry(500, 60, 420, 550);
+	srcscroll->setGeometry(10, 60, 650, 600);
+	Proscroll->setGeometry(670, 60, 650, 600);
 	srcscroll->setWidget(srclabel);
 	Proscroll->setWidget(Prolabel);
 	srcscroll->show();
@@ -289,7 +295,6 @@ void ImagePro::edgebyLaplacian() {
 	image = Mat2QImage(laplacianimage);
 	Prolabel->setPixmap(QPixmap::fromImage(image));
 	Prolabel->resize(QSize(image.width(), image.height()));
-	//Prolabel->alignment();
 	Prolabel->show();
 }
 void ImagePro::edgebySobel_X() {
@@ -299,7 +304,6 @@ void ImagePro::edgebySobel_X() {
 	image = Mat2QImage(sobel_x);
 	Prolabel->setPixmap(QPixmap::fromImage(image));
 	Prolabel->resize(QSize(image.width(), image.height()));
-	//Prolabel->alignment();
 	Prolabel->show();
 }
 void ImagePro::edgebySobel_Y() {
@@ -309,7 +313,6 @@ void ImagePro::edgebySobel_Y() {
 	image = Mat2QImage(sobel_y);
 	Prolabel->setPixmap(QPixmap::fromImage(image));
 	Prolabel->resize(QSize(image.width(), image.height()));
-	//Prolabel->alignment();
 	Prolabel->show();
 }
 void ImagePro::edgebySobel_XY() {
@@ -319,9 +322,141 @@ void ImagePro::edgebySobel_XY() {
 	image = Mat2QImage(sobelimage);
 	Prolabel->setPixmap(QPixmap::fromImage(image));
 	Prolabel->resize(QSize(image.width(), image.height()));
-	//Prolabel->alignment();
 	Prolabel->show();
 }
+void ImagePro::edgebyScharr_X() {
+	QImage image = srclabel->pixmap()->toImage();
+	Mat image1 = QImage2Mat(image);
+	Mat scharr_x = EdgeDetecction_Scharr_X(image1);
+	image = Mat2QImage(scharr_x);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->show();
+}
+void ImagePro::edgebyScharr_Y() {
+	QImage image = srclabel->pixmap()->toImage();
+	Mat image1 = QImage2Mat(image);
+	Mat scharr_y = EdgeDetecction_Scharr_Y(image1);
+	image = Mat2QImage(scharr_y);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->show();
+}
+void ImagePro::edgebyScharr_XY() {
+	QImage image = srclabel->pixmap()->toImage();
+	Mat image1 = QImage2Mat(image);
+	Mat scharr_xy = EdgeDetecction_Scharr(image1);
+	image = Mat2QImage(scharr_xy);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->show();
+}
+//filter function
+//box
+void Trackbar_BoxFilter(int, void*) {
+	Mat image1 = QImage2Mat(qimage);
+	Mat BoxFilterIamge = Fun_Box_Filter(image1, BoxValue);
+	QImage  image = Mat2QImage(BoxFilterIamge);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->show();
+}
+void ImagePro::Box_Filter() {
+	namedWindow("Box Filter", 1);
+	createTrackbar("Value", "Box Filter", &BoxValue, 50, Trackbar_BoxFilter);
+}
+//Mean
+void Trackbar_MeanFilter(int, void*) {
+	Mat image1 = QImage2Mat(qimage);
+	Mat MeanFilterImage = Fun_Mean_Filter(image1, MeanValue);
+	QImage  image = Mat2QImage(MeanFilterImage);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->show();
+}
+void ImagePro::Mean_Filter() {
+	namedWindow("Mean Filter", 1);
+	createTrackbar("Value", "Mean Filter", &MeanValue, 50, Trackbar_MeanFilter);
+}
+
+//Gaussian
+void Trackbar_GaussianFilter(int, void*) {
+	Mat image1 = QImage2Mat(qimage);
+	Mat GaussianFilterImage = Fun_Gaussian_Filter(image1, GaussianValue);
+	QImage  image = Mat2QImage(GaussianFilterImage);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->show();
+}
+void ImagePro::Gaussian_Filter() {
+	namedWindow("Gaussian Filter", 1);
+	createTrackbar("Value", "Gaussian Filter", &GaussianValue, 50, Trackbar_GaussianFilter);
+}
+//Median
+void Trackbar_MedianFilter(int, void*) {
+	Mat image1 = QImage2Mat(qimage);
+	Mat MedianFilterImage = Fun_Median_Filter(image1,MedianValue);
+	QImage  image = Mat2QImage(MedianFilterImage);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->show();
+}
+void ImagePro::Median_Filter() {
+	namedWindow("Median Filter", 1);
+	createTrackbar("Value", "Median Filter", &MedianValue, 50, Trackbar_MedianFilter);
+}
+//Bilateral
+void Trackbar_BilateralFilter(int, void*) {
+	Mat image1 = QImage2Mat(qimage);
+	Mat BilateralFilterImage = Fun_Bilateral_Filter(image1, BilateralValue);
+	QImage  image = Mat2QImage(BilateralFilterImage);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	Prolabel->show();
+}
+
+void ImagePro::Bilateral_Filter() {
+	namedWindow("Bilateral Filter", 1);
+	createTrackbar("Value", "Bilateral Filter", &BilateralValue, 50, Trackbar_BilateralFilter);
+}
+
+void ImagePro::opencamera() {
+	VideoCapture capture(0);
+	if (!capture.isOpened())
+	{
+		return;
+	}
+	bool stop = false;
+	while (!stop)
+	{
+		capture >> frame;
+		imshow("camera",frame);
+		if (waitKey(30) == 27) {
+			stop = true;
+		}
+	}
+	if (stop) {
+		capture.release();
+	}
+}
+void ImagePro::takephoto() {
+	if (!frame.empty())
+	{
+		//imshow("test", frame);
+		Mat phtotoimage = Fun_Bilateral_Filter(frame, 10);
+		QImage image = Mat2QImage(phtotoimage);
+		qimage = image;
+		srclabel->setPixmap(QPixmap::fromImage(image));
+		srclabel->resize(QSize(image.width(), image.height()));
+		srclabel->show();
+		Prolabel->clear();
+	}
+	else
+	{
+		return;
+	}
+}
+
 void ImagePro::createActions(){
 	//openAction
 	openAction = new QAction(QIcon("./Resources/images/open.png"), tr("&打开"), this);
@@ -351,6 +486,13 @@ void ImagePro::createActions(){
 	selectpicAction = new QAction(tr("切换图像"), this);
 	selectpicAction->setStatusTip(tr("切换处理的图片"));
 	connect(selectpicAction, &QAction::triggered, this, &ImagePro::exchangepicture);
+	//Open Camera
+	OpenCameraAction = new  QAction(tr("打开摄像头"), this);
+	connect(OpenCameraAction, &QAction::triggered, this, &ImagePro::opencamera);
+	//take photo
+	TakePhotoAction = new QAction(QIcon("./Resources/images/takephoto.png"), tr("&拍照"), this);
+	TakePhotoAction->setStatusTip(tr("拍摄照片"));
+	connect(TakePhotoAction, &QAction::triggered, this, &ImagePro::takephoto);
 	//scale
 	scaleAction = new QAction(QIcon("./Resources/images/scale.png"),tr("&缩放"), this);
 	scaleAction->setShortcut(QKeySequence::ZoomIn);
@@ -389,13 +531,37 @@ void ImagePro::createActions(){
 	LaplacianAction = new QAction(tr("Laplacian"), this);
 	LaplacianAction->setStatusTip(tr("基于Laplacian的边缘检测"));
 	connect(LaplacianAction, &QAction::triggered, this, &ImagePro::edgebyLaplacian);
+	//sobel
 	Sobel_X_Action = new QAction(tr("X方向"), this);
 	connect(Sobel_X_Action, &QAction::triggered, this, &ImagePro::edgebySobel_X);
 	Sobel_Y_Action = new QAction(tr("Y方向"), this);
 	connect(Sobel_Y_Action, &QAction::triggered, this, &ImagePro::edgebySobel_Y);
 	Sobel_XY_Action = new QAction(tr("XY方向混合"), this);
 	connect(Sobel_XY_Action, &QAction::triggered, this, &ImagePro::edgebySobel_XY);
-	ScharrAction = new QAction(tr("Scharr"), this);
+	//scharr
+	Scharr_X_Action = new QAction(tr("X方向"), this);
+	connect(Scharr_X_Action, &QAction::triggered, this, &ImagePro::edgebyScharr_X);
+	Scharr_Y_Action = new QAction(tr("Y方向"), this);
+	connect(Scharr_Y_Action, &QAction::triggered, this, &ImagePro::edgebyScharr_Y);
+	Scharr_XY_Action = new QAction(tr("XY方向混合"), this);
+	connect(Scharr_XY_Action, &QAction::triggered, this, &ImagePro::edgebyScharr_XY);
+	//Filter
+	//Box Filter
+	Box_FilterAction = new QAction(tr("方框滤波"), this);
+	connect(Box_FilterAction, &QAction::triggered, this, &ImagePro::Box_Filter);
+	//Mean Filter
+	Mean_FilterAction = new QAction(tr("均值滤波"), this);
+	connect(Mean_FilterAction, &QAction::triggered, this, &ImagePro::Mean_Filter);
+	//Gaussian Filter
+	Gaussian_FilterAction = new QAction(tr("高斯滤波"), this);
+	connect(Gaussian_FilterAction, &QAction::triggered, this, &ImagePro::Gaussian_Filter);
+	//Median Filter
+	Median_FilterAction = new QAction(tr("中值滤波"), this);
+	connect(Median_FilterAction, &QAction::triggered, this, &ImagePro::Median_Filter);
+	//Bilateral Filter
+	Bilateral_FilterAction = new QAction(tr("双边滤波"), this);
+	connect(Bilateral_FilterAction, &QAction::triggered, this, &ImagePro::Bilateral_Filter);
+	//
 	statusBar();
 }
 
@@ -410,17 +576,35 @@ void ImagePro::createMenus(){
 	editMenu->addAction(copyAction);
 	editMenu->addAction(pasteAction);
 	editMenu->addAction(selectpicAction);
+	editMenu->addAction(OpenCameraAction);
 	//function
 	selectFun = menuBar()->addMenu(tr("&工具"));
 	SobelMenu = new QMenu(tr("Sobel"));
+	ScharrMenu = new QMenu(tr("Scharr"));
+	FilterMenu = new QMenu(tr("滤波"));
+	linearFilterMenu = new QMenu(tr("线性滤波"));
+	nonlinearFilterMenu = new QMenu(tr("非线性滤波"));
+	//add filter action
+	FilterMenu->addMenu(linearFilterMenu);
+	FilterMenu->addMenu(nonlinearFilterMenu);
+	linearFilterMenu->addAction(Box_FilterAction);
+	linearFilterMenu->addAction(Mean_FilterAction);
+	linearFilterMenu->addAction(Gaussian_FilterAction);
+	nonlinearFilterMenu->addAction(Median_FilterAction);
+	nonlinearFilterMenu->addAction(Bilateral_FilterAction);
 	edgedetectionMenu= new QMenu(tr("&边缘检测"));
+	edgedetectionMenu->addMenu(SobelMenu);
+	edgedetectionMenu->addMenu(ScharrMenu);
 	edgedetectionMenu->addAction(LaplacianAction);
 	SobelMenu->addAction(Sobel_X_Action);
 	SobelMenu->addAction(Sobel_Y_Action);
 	SobelMenu->addAction(Sobel_XY_Action);
-	edgedetectionMenu->addMenu(SobelMenu);
-	edgedetectionMenu->addAction(ScharrAction);
+	ScharrMenu->addAction(Scharr_X_Action);
+	ScharrMenu->addAction(Scharr_Y_Action);
+	ScharrMenu->addAction(Scharr_XY_Action);
+	//selectmenu
 	selectFun->addMenu(edgedetectionMenu);
+	selectFun->addMenu(FilterMenu);
 	selectFun->addAction(scaleAction);
 	selectFun->addAction(tograyAction);
 	selectFun->addAction(tobinaryAction);
@@ -429,7 +613,6 @@ void ImagePro::createMenus(){
 	selectFun->addAction(flipAction);
 	selectFun->addAction(reverseAction);
 	selectFun->addAction(contrastandbrightAction);
-	
 	//help
 	helpMenu = menuBar()->addMenu(tr("&帮助"));
 	/*helpMenu->addAction(aboutAction);
@@ -447,4 +630,5 @@ void ImagePro::createToolBars(){
 	editToolBar->addAction(copyAction);
 	//editToolBar->addAction(cutAction);
 	editToolBar->addAction(pasteAction);
+	editToolBar->addAction(TakePhotoAction);
 }

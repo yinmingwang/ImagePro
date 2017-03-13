@@ -1,4 +1,3 @@
-
 #include <QtWidgets/QMainWindow>
 #include <QLineEdit>
 #include <QVBoxLayout>
