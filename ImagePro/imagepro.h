@@ -40,13 +40,20 @@ public:
 	void flipimage();
 	void reverseimage();
 	void contrastAndbright();
+	void exchangepicture();
+	void edgebyLaplacian();
+	void edgebySobel_X();
+	void edgebySobel_Y();
+	void edgebySobel_XY();
+	void edgebyScharr();
 private:
 	//菜单栏 工具栏
 	QMenu *fileMenu;
 	QMenu *editMenu;
 	QMenu *helpMenu;
 	QMenu *selectFun;
-	QMenu *edgedetection;
+	QMenu *edgedetectionMenu;
+	QMenu *SobelMenu;
 	QToolBar *fileToolBar;
 	QToolBar *editToolBar;
 	//定义了file的下拉菜单
@@ -72,9 +79,11 @@ private:
 	QAction *flipAction;
 	QAction *reverseAction;
 	QAction *contrastandbrightAction;
+	QAction *Sobel_X_Action;
+	QAction *Sobel_Y_Action;
+	QAction *Sobel_XY_Action;
 	//edge detection
 	QAction *LaplacianAction;
-	QAction *SobelAction;
 	QAction *ScharrAction;
 	
 	//inputimgDialog *inputdia;

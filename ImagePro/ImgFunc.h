@@ -171,3 +171,41 @@ inline Mat ChangeContrastAndBright(Mat srcimage, int contrastvalue, int brightva
 	}
 	return cAb;
 }
+inline Mat EdgeDetection_Laplacian(Mat srcimage) {
+	GaussianBlur(srcimage, srcimage, Size(3, 3), 0, 0, BORDER_DEFAULT);
+	Mat grayimage;
+	Mat Laplacianimage;
+	Mat absimage;
+	cvtColor(srcimage, grayimage, COLOR_RGB2GRAY);
+	Laplacian(grayimage, Laplacianimage, CV_16S, 3, 1, 0, BORDER_DEFAULT);
+	convertScaleAbs(Laplacianimage, absimage);
+	return absimage;
+}
+inline Mat EdgeDetection_Sobel_X(Mat srcimage) {
+	Mat gradX, grayimage;
+	Mat absX;
+	GaussianBlur(srcimage, srcimage, Size(3, 3), 0, 0, BORDER_DEFAULT);
+	cvtColor(srcimage, grayimage, CV_RGB2GRAY);
+	Sobel(grayimage, gradX, CV_16S, 1, 0, 3, 1, 0, BORDER_DEFAULT);
+	convertScaleAbs(gradX, absX);
+	return absX;
+}
+inline Mat EdgeDetection_Sobel_Y(Mat srcimage) {
+	Mat gradY, absY, grayimage;
+	GaussianBlur(srcimage, srcimage, Size(3, 3), 0, 0, BORDER_DEFAULT);
+	cvtColor(srcimage, grayimage, CV_RGB2GRAY);
+	Sobel(grayimage, gradY, CV_16S, 1, 0, 3, 1, 0, BORDER_DEFAULT);
+	convertScaleAbs(gradY, absY);
+	return absY;
+}
+inline Mat EdgeDetection_Sobel(Mat srcimage){
+	Mat gradX, gradY, absX, absY, sobelimage, grayimage;
+	GaussianBlur(srcimage, srcimage, Size(3, 3), 0, 0, BORDER_DEFAULT);
+	cvtColor(srcimage, grayimage, CV_RGB2GRAY);
+	Sobel(grayimage, gradX, CV_16S, 1, 0, 3, 1, 0, BORDER_DEFAULT);
+	convertScaleAbs(gradX, absX);
+	Sobel(grayimage, gradY, CV_16S, 0, 1, 3, 1, 0, BORDER_DEFAULT);
+	convertScaleAbs(gradY, absY);
+	addWeighted(absX, .5, absY, 0.5, 0, sobelimage);
+	return sobelimage;
+}

@@ -129,6 +129,16 @@ void ImagePro::saveFile(){
 void ImagePro::exitFile(){
 	close();
 }
+void ImagePro::exchangepicture() {
+	QImage image = Prolabel->pixmap()->toImage();
+	qimage = image;
+	srclabel->clear();
+	srclabel->setPixmap(QPixmap::fromImage(image));
+	srclabel->resize(QSize(image.width(), image.height()));
+	srclabel->show();
+	Prolabel->clear();
+
+}
 void ImagePro::rgbTogray() {
 	QImage image = srclabel->pixmap()->toImage();
 	Mat image1 = QImage2Mat(image);
@@ -272,6 +282,46 @@ void ImagePro::contrastAndbright() {
 	createTrackbar("ContrastValue", "ContrastAndBrightBox", &contrastvalue, 300, ModifiyContrastAndBright);
 	createTrackbar("BrightValue", "ContrastAndBrightBox", &brightvalue, 300, ModifiyContrastAndBright);
 }
+void ImagePro::edgebyLaplacian() {
+	QImage image = srclabel->pixmap()->toImage();
+	Mat image1 = QImage2Mat(image);
+	Mat laplacianimage = EdgeDetection_Laplacian(image1);
+	image = Mat2QImage(laplacianimage);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	//Prolabel->alignment();
+	Prolabel->show();
+}
+void ImagePro::edgebySobel_X() {
+	QImage image = srclabel->pixmap()->toImage();
+	Mat image1 = QImage2Mat(image);
+	Mat sobel_x = EdgeDetection_Sobel_X(image1);
+	image = Mat2QImage(sobel_x);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	//Prolabel->alignment();
+	Prolabel->show();
+}
+void ImagePro::edgebySobel_Y() {
+	QImage image = srclabel->pixmap()->toImage();
+	Mat image1 = QImage2Mat(image);
+	Mat sobel_y = EdgeDetection_Sobel_Y(image1);
+	image = Mat2QImage(sobel_y);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	//Prolabel->alignment();
+	Prolabel->show();
+}
+void ImagePro::edgebySobel_XY() {
+	QImage image = srclabel->pixmap()->toImage();
+	Mat image1 = QImage2Mat(image);
+	Mat sobelimage = EdgeDetection_Sobel(image1);
+	image = Mat2QImage(sobelimage);
+	Prolabel->setPixmap(QPixmap::fromImage(image));
+	Prolabel->resize(QSize(image.width(), image.height()));
+	//Prolabel->alignment();
+	Prolabel->show();
+}
 void ImagePro::createActions(){
 	//openAction
 	openAction = new QAction(QIcon("./Resources/images/open.png"), tr("&打开"), this);
@@ -298,8 +348,9 @@ void ImagePro::createActions(){
 	exitAction->setStatusTip(tr("退出当前窗口"));
 	connect(exitAction, &QAction::triggered, this, &ImagePro::exitFile);
 	//select picture
-	selectpicAction = new QAction(tr("选择图像"), this);
-	selectpicAction->setStatusTip(tr("选择要处理的图片"));
+	selectpicAction = new QAction(tr("切换图像"), this);
+	selectpicAction->setStatusTip(tr("切换处理的图片"));
+	connect(selectpicAction, &QAction::triggered, this, &ImagePro::exchangepicture);
 	//scale
 	scaleAction = new QAction(QIcon("./Resources/images/scale.png"),tr("&缩放"), this);
 	scaleAction->setShortcut(QKeySequence::ZoomIn);
@@ -336,10 +387,18 @@ void ImagePro::createActions(){
 	connect(contrastandbrightAction, &QAction::triggered, this, &ImagePro::contrastAndbright);
 	//edge detection
 	LaplacianAction = new QAction(tr("Laplacian"), this);
-	SobelAction = new QAction(tr("Sobel"), this);
+	LaplacianAction->setStatusTip(tr("基于Laplacian的边缘检测"));
+	connect(LaplacianAction, &QAction::triggered, this, &ImagePro::edgebyLaplacian);
+	Sobel_X_Action = new QAction(tr("X方向"), this);
+	connect(Sobel_X_Action, &QAction::triggered, this, &ImagePro::edgebySobel_X);
+	Sobel_Y_Action = new QAction(tr("Y方向"), this);
+	connect(Sobel_Y_Action, &QAction::triggered, this, &ImagePro::edgebySobel_Y);
+	Sobel_XY_Action = new QAction(tr("XY方向混合"), this);
+	connect(Sobel_XY_Action, &QAction::triggered, this, &ImagePro::edgebySobel_XY);
 	ScharrAction = new QAction(tr("Scharr"), this);
 	statusBar();
 }
+
 void ImagePro::createMenus(){
 	//fileMenus
 	fileMenu = menuBar()->addMenu(tr("&文件"));
@@ -353,10 +412,15 @@ void ImagePro::createMenus(){
 	editMenu->addAction(selectpicAction);
 	//function
 	selectFun = menuBar()->addMenu(tr("&工具"));
-	edgedetection = new QMenu(tr("&边缘检测"));
-	edgedetection->addAction(LaplacianAction);
-	edgedetection->addAction(SobelAction);
-	edgedetection->addAction(ScharrAction);
+	SobelMenu = new QMenu(tr("Sobel"));
+	edgedetectionMenu= new QMenu(tr("&边缘检测"));
+	edgedetectionMenu->addAction(LaplacianAction);
+	SobelMenu->addAction(Sobel_X_Action);
+	SobelMenu->addAction(Sobel_Y_Action);
+	SobelMenu->addAction(Sobel_XY_Action);
+	edgedetectionMenu->addMenu(SobelMenu);
+	edgedetectionMenu->addAction(ScharrAction);
+	selectFun->addMenu(edgedetectionMenu);
 	selectFun->addAction(scaleAction);
 	selectFun->addAction(tograyAction);
 	selectFun->addAction(tobinaryAction);
@@ -365,7 +429,7 @@ void ImagePro::createMenus(){
 	selectFun->addAction(flipAction);
 	selectFun->addAction(reverseAction);
 	selectFun->addAction(contrastandbrightAction);
-	selectFun->addMenu(edgedetection);
+	
 	//help
 	helpMenu = menuBar()->addMenu(tr("&帮助"));
 	/*helpMenu->addAction(aboutAction);
