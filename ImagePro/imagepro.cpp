@@ -69,13 +69,13 @@ void ImagePro::openFile()
 		"",
 		tr("Images (*.png *.bmp *.jpg *.tif *.GIF)"));
 	if (openpath.isEmpty()) {
-		return;
+		QMessageBox::warning(this, tr("警告"), tr("当前路径为空"));
 	}
 	else{
 		string  OpenPath = string((const char *)openpath.toLocal8Bit());
 		Mat image1 = imread(OpenPath);
 		//matimage = image1;
-		qDebug() << image1.cols << " " << image1.rows << endl;
+		//qDebug() << image1.cols << " " << image1.rows << endl;
 		if (image1.cols > 600 || image1.rows > 420) {
 			QMessageBox::information(this, tr("提示"), tr("图像过大，已经缩小为合适大小显示"));
 			images = image1;
@@ -85,10 +85,7 @@ void ImagePro::openFile()
 		}
 		
 		if (images.empty()) {
-			QMessageBox::information(this,
-				tr("打开图像失败"),
-				tr("打开图像失败!"));
-			return;
+			QMessageBox::warning(this, tr("警告"), tr("打开图像失败!"));
 		}
 		else {
 			QImage image = Mat2QImage(images);
@@ -100,17 +97,15 @@ void ImagePro::openFile()
 		}
 	}
 }
-void ImagePro::saveFile(){
+ void ImagePro::saveFile(){
 	//if (srclabel->text == "") {
-		//QMessageBox::information(this, tr("警告"), tr("没有任何图像可以保存"));
+	//QMessageBox::information(this, tr("警告"), tr("没有任何图像可以保存"));
 	//}
-	
-    QImage image = Prolabel->pixmap()->toImage();
-	if (image.height() == 0 || image.width() == 0) {
-		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以保存"));
-		close();
-	}
+	 if (Prolabel->pixmap() == NULL) {
+		 QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以保存"));
+	 }
 	else {
+		QImage image = Prolabel->pixmap()->toImage();
 		QMessageBox::information(this, tr("提示"), tr("图像已修改，确定保存？"));
 		Mat saveimage = QImage2Mat(image);
 		//imshow("test",testimage);
@@ -126,62 +121,70 @@ void ImagePro::saveFile(){
 		}
 		else {
 			QMessageBox::information(this, tr("提示"), tr("保存失败"));
-			close();
 		}
-		
 	}
-	
 }
-void ImagePro::exitFile(){
+void ImagePro::exitFile() {
 	close();
 }
 void ImagePro::exchangepicture() {
-	QImage image = Prolabel->pixmap()->toImage();
-	qimage = image;
-	srclabel->clear();
-	srclabel->setPixmap(QPixmap::fromImage(image));
-	srclabel->resize(QSize(image.width(), image.height()));
-	srclabel->show();
-	Prolabel->clear();
-
+	if (Prolabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以交换"));
+	}
+	else {
+		QImage image = Prolabel->pixmap()->toImage();
+		qimage = image;
+		srclabel->clear();
+		srclabel->setPixmap(QPixmap::fromImage(image));
+		srclabel->resize(QSize(image.width(), image.height()));
+		srclabel->show();
+		Prolabel->clear();
+	}
 }
 void ImagePro::rgbTogray() {
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	Mat tempimg = Togray(image1);
-	image = Mat2QImage(tempimg);
-	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->resize(QSize(image.width(), image.height()));
-	Prolabel->alignment();
-	Prolabel->show();
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		Mat tempimg = Togray(image1);
+		image = Mat2QImage(tempimg);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->alignment();
+		Prolabel->show();
+	}
 }
 void ImagePro::rgbTobinary() {
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	Mat tempimg = Tobinary(image1);
-	image = Mat2QImage(tempimg);
-	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->resize(QSize(image.width(), image.height()));
-	Prolabel->alignment();
-	Prolabel->show();
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	} 
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		Mat tempimg = Tobinary(image1);
+		image = Mat2QImage(tempimg);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->alignment();
+		Prolabel->show();
+	}
 }
 void ImagePro::showhistogram(){
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	Mat histogramimg = Showhist(image1);
-	image = Mat2QImage(histogramimg);
-	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->resize(QSize(image.width(), image.height()));
-	Prolabel->show();
-	
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		Mat histogramimg = Showhist(image1);
+		image = Mat2QImage(histogramimg);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->show();
+	}
 }
-/*QLabel* ImagePro::getProlabel() {
-		return Prolabel;
-}
-QLabel* ImagePro::getsrclabel() {
-	
-	return srclabel;
-}*/
 void  scale(int w, void*) {
 	
 	Mat image1 = QImage2Mat(qimage);
@@ -204,15 +207,20 @@ void  scale(int w, void*) {
 	//imshow("test", image1);
 }
 void ImagePro::scaleimg() {
-	QImage image = srclabel->pixmap()->toImage();
-	//inputimgDialog *inputdia = new inputimgDialog;
-	Mat image1 = QImage2Mat(image);
-	rowsize = image1.rows/2;
-	colsize = image1.cols/2;
-	//QString strQ = QString::fromLocal8Bit(str.c_str());
-	namedWindow("ScaleBox",1);
-	createTrackbar("rows", "ScaleBox", &rowsize, image1.rows * 2, scale);
-	createTrackbar("cols", "ScaleBox", &colsize, image1.cols * 2, scale);
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		//inputimgDialog *inputdia = new inputimgDialog;
+		Mat image1 = QImage2Mat(image);
+		rowsize = image1.rows / 2;
+		colsize = image1.cols / 2;
+		//QString strQ = QString::fromLocal8Bit(str.c_str());
+		namedWindow("ScaleBox", 1);
+		createTrackbar("rows", "ScaleBox", &rowsize, image1.rows * 2, scale);
+		createTrackbar("cols", "ScaleBox", &colsize, image1.cols * 2, scale);
+	}
 }
 void rotate(int, void*) {
 	Mat image1 = QImage2Mat(qimage);
@@ -222,59 +230,59 @@ void rotate(int, void*) {
 	Prolabel->resize(QSize(image.width(), image.height()));
 	Prolabel->show();
 }
-Mat reverseimg(Mat srcimage) {
-	
-	Mat reverseimages;
-	//channel[0] = srcimage;
-	
-	//merge(channel, 3, reverseimages);
-	//imshow("B", channel[0]);
-	return srcimage;
-}
 void ImagePro::rotateimage() {
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	namedWindow("RotateBox",1);
-	createTrackbar("angle", "RotateBox", &rotateangle, 360, rotate);
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		namedWindow("RotateBox", 1);
+		createTrackbar("angle", "RotateBox", &rotateangle, 360, rotate);
+	}
 }
 void ImagePro::flipimage() {
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	Mat tempimg = FlipImages(image1);
-	image = Mat2QImage(tempimg);
-	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->resize(QSize(image.width(), image.height()));
-	Prolabel->alignment();
-	Prolabel->show();
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		Mat tempimg = FlipImages(image1);
+		image = Mat2QImage(tempimg);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->alignment();
+		Prolabel->show();
+	}
 }
 void ImagePro::reverseimage() {
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	vector<Mat> channel;
-	split(image1, channel);
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < channel[i].rows; j++) {
-			for (int k = 0; k < channel[i].cols; k++) {
-				channel[i].at<uchar>(j, k) = 255 - channel[i].at<uchar>(j, k);
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		vector<Mat> channel;
+		split(image1, channel);
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < channel[i].rows; j++) {
+				for (int k = 0; k < channel[i].cols; k++) {
+					channel[i].at<uchar>(j, k) = 255 - channel[i].at<uchar>(j, k);
+				}
 			}
 		}
+		Mat tempimg;
+		merge(channel, tempimg);
+		image = Mat2QImage(tempimg);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->alignment();
+		Prolabel->show();
 	}
-	Mat tempimg;
-	merge(channel,tempimg);
-	image = Mat2QImage(tempimg);
-	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->resize(QSize(image.width(), image.height()));
-	Prolabel->alignment();
-	Prolabel->show();
 }
 void ModifiyContrastAndBright(int, void*) {
 	Mat image1 = QImage2Mat(qimage);
-	/*if (contrastvalue <= 0) {
-		contrastvalue = 1;
-	}
-	if (brightvalue <= 0) {
-		brightvalue = 1;
-	}*/
 	Mat CAB = ChangeContrastAndBright(image1, contrastvalue, brightvalue);
 	QImage  image = Mat2QImage(CAB);
 	Prolabel->setPixmap(QPixmap::fromImage(image));
@@ -282,74 +290,115 @@ void ModifiyContrastAndBright(int, void*) {
 	Prolabel->show();
 }
 void ImagePro::contrastAndbright() {
-	contrastvalue = 80;
-	brightvalue = 80;
-	namedWindow("ContrastAndBrightBox", 1);
-	createTrackbar("ContrastValue", "ContrastAndBrightBox", &contrastvalue, 300, ModifiyContrastAndBright);
-	createTrackbar("BrightValue", "ContrastAndBrightBox", &brightvalue, 300, ModifiyContrastAndBright);
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		contrastvalue = 80;
+		brightvalue = 80;
+		namedWindow("ContrastAndBrightBox", 1);
+		createTrackbar("ContrastValue", "ContrastAndBrightBox", &contrastvalue, 300, ModifiyContrastAndBright);
+		createTrackbar("BrightValue", "ContrastAndBrightBox", &brightvalue, 300, ModifiyContrastAndBright);
+	}
 }
 void ImagePro::edgebyLaplacian() {
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	Mat laplacianimage = EdgeDetection_Laplacian(image1);
-	image = Mat2QImage(laplacianimage);
-	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->resize(QSize(image.width(), image.height()));
-	Prolabel->show();
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		Mat laplacianimage = EdgeDetection_Laplacian(image1);
+		image = Mat2QImage(laplacianimage);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->show();
+	}
 }
 void ImagePro::edgebySobel_X() {
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	Mat sobel_x = EdgeDetection_Sobel_X(image1);
-	image = Mat2QImage(sobel_x);
-	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->resize(QSize(image.width(), image.height()));
-	Prolabel->show();
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		Mat sobel_x = EdgeDetection_Sobel_X(image1);
+		image = Mat2QImage(sobel_x);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->show();
+	}
 }
 void ImagePro::edgebySobel_Y() {
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	Mat sobel_y = EdgeDetection_Sobel_Y(image1);
-	image = Mat2QImage(sobel_y);
-	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->resize(QSize(image.width(), image.height()));
-	Prolabel->show();
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		Mat sobel_y = EdgeDetection_Sobel_Y(image1);
+		image = Mat2QImage(sobel_y);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->show();
+	}
 }
 void ImagePro::edgebySobel_XY() {
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	Mat sobelimage = EdgeDetection_Sobel(image1);
-	image = Mat2QImage(sobelimage);
-	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->resize(QSize(image.width(), image.height()));
-	Prolabel->show();
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		Mat sobelimage = EdgeDetection_Sobel(image1);
+		image = Mat2QImage(sobelimage);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->show();
+	}
 }
 void ImagePro::edgebyScharr_X() {
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	Mat scharr_x = EdgeDetecction_Scharr_X(image1);
-	image = Mat2QImage(scharr_x);
-	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->resize(QSize(image.width(), image.height()));
-	Prolabel->show();
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		Mat scharr_x = EdgeDetecction_Scharr_X(image1);
+		image = Mat2QImage(scharr_x);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->show();
+	}
 }
 void ImagePro::edgebyScharr_Y() {
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	Mat scharr_y = EdgeDetecction_Scharr_Y(image1);
-	image = Mat2QImage(scharr_y);
-	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->resize(QSize(image.width(), image.height()));
-	Prolabel->show();
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		Mat scharr_y = EdgeDetecction_Scharr_Y(image1);
+		image = Mat2QImage(scharr_y);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->show();
+	}
 }
 void ImagePro::edgebyScharr_XY() {
-	QImage image = srclabel->pixmap()->toImage();
-	Mat image1 = QImage2Mat(image);
-	Mat scharr_xy = EdgeDetecction_Scharr(image1);
-	image = Mat2QImage(scharr_xy);
-	Prolabel->setPixmap(QPixmap::fromImage(image));
-	Prolabel->resize(QSize(image.width(), image.height()));
-	Prolabel->show();
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		Mat scharr_xy = EdgeDetecction_Scharr(image1);
+		image = Mat2QImage(scharr_xy);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->show();
+	}
+	
 }
 //filter function
 //box
@@ -362,8 +411,13 @@ void Trackbar_BoxFilter(int, void*) {
 	Prolabel->show();
 }
 void ImagePro::Box_Filter() {
-	namedWindow("Box Filter", 1);
-	createTrackbar("Value", "Box Filter", &BoxValue, 50, Trackbar_BoxFilter);
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	} 
+	else {
+		namedWindow("Box Filter", 1);
+		createTrackbar("Value", "Box Filter", &BoxValue, 50, Trackbar_BoxFilter);
+	}
 }
 //Mean
 void Trackbar_MeanFilter(int, void*) {
@@ -375,8 +429,14 @@ void Trackbar_MeanFilter(int, void*) {
 	Prolabel->show();
 }
 void ImagePro::Mean_Filter() {
-	namedWindow("Mean Filter", 1);
-	createTrackbar("Value", "Mean Filter", &MeanValue, 50, Trackbar_MeanFilter);
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		namedWindow("Mean Filter", 1);
+		createTrackbar("Value", "Mean Filter", &MeanValue, 50, Trackbar_MeanFilter);
+	}
+	
 }
 
 //Gaussian
@@ -389,8 +449,13 @@ void Trackbar_GaussianFilter(int, void*) {
 	Prolabel->show();
 }
 void ImagePro::Gaussian_Filter() {
-	namedWindow("Gaussian Filter", 1);
-	createTrackbar("Value", "Gaussian Filter", &GaussianValue, 50, Trackbar_GaussianFilter);
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		namedWindow("Gaussian Filter", 1);
+		createTrackbar("Value", "Gaussian Filter", &GaussianValue, 50, Trackbar_GaussianFilter);
+	}	
 }
 //Median
 void Trackbar_MedianFilter(int, void*) {
@@ -402,9 +467,15 @@ void Trackbar_MedianFilter(int, void*) {
 	Prolabel->show();
 }
 void ImagePro::Median_Filter() {
-	namedWindow("Median Filter", 1);
-	createTrackbar("Value", "Median Filter", &MedianValue, 50, Trackbar_MedianFilter);
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		namedWindow("Median Filter", 1);
+		createTrackbar("Value", "Median Filter", &MedianValue, 50, Trackbar_MedianFilter);
+	}
 }
+	
 //Bilateral
 void Trackbar_BilateralFilter(int, void*) {
 	Mat image1 = QImage2Mat(qimage);
@@ -416,8 +487,13 @@ void Trackbar_BilateralFilter(int, void*) {
 }
 
 void ImagePro::Bilateral_Filter() {
-	namedWindow("Bilateral Filter", 1);
-	createTrackbar("Value", "Bilateral Filter", &BilateralValue, 50, Trackbar_BilateralFilter);
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		namedWindow("Bilateral Filter", 1);
+		createTrackbar("Value", "Bilateral Filter", &BilateralValue, 50, Trackbar_BilateralFilter);
+	}
 }
 
 void ImagePro::opencamera() {
