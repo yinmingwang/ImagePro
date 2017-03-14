@@ -41,6 +41,7 @@ public:
 	void reverseimage();
 	void contrastAndbright();
 	void exchangepicture();
+	void doodlepicture();
 	void opencamera();
 	void takephoto();
 	void edgebyLaplacian();
@@ -107,6 +108,7 @@ private:
 	QAction *Sobel_XY_Action;
 	QAction *showhisAction;
 	QAction *enhanceAction;
+	QAction *doodleAction;
 	//edge detection
 	QAction *LaplacianAction;
 	QAction *Scharr_X_Action;

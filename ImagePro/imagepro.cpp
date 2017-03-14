@@ -35,7 +35,10 @@ int MeanValue = 2;
 int GaussianValue = 2;
 int MedianValue = 2;
 int BilateralValue = 2;
+Mat dooleimage;
+Point prevPt(-1, -1);
 bool cameraisopen = false;//判断摄像头是否打开
+bool isback = false;
 QLabel *srclabel;
 QLabel *Prolabel;
 Mat frame;
@@ -537,6 +540,39 @@ void ImagePro::takephoto() {
 		QMessageBox::information(this, tr("提示"), tr("请先打开摄像头"));
 	}
 }
+static void onMouse(int event, int x, int y, int flags, void*)
+{
+	if (event == EVENT_LBUTTONUP || !(flags & EVENT_FLAG_LBUTTON))
+		prevPt = Point(-1, -1);
+	else if (event == EVENT_LBUTTONDOWN)
+		prevPt = Point(x, y);
+	else if (event == EVENT_MOUSEMOVE && (flags & EVENT_FLAG_LBUTTON))
+	{
+		Point pt(x, y);
+		if (prevPt.x < 0)
+			prevPt = pt;
+		line(dooleimage, prevPt, pt, Scalar::all(255), 5, 8, 0);
+		prevPt = pt;
+		QImage image = Mat2QImage(dooleimage);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->show();
+		//imshow("test", dooleimage);
+	}
+}
+
+void ImagePro::doodlepicture() {
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前可以涂鸦的图像"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		dooleimage = image1.clone();
+		imshow("src", dooleimage);
+		setMouseCallback("src", onMouse, 0);
+	}
+}
 void ImagePro::enhancePicture() {
 	if (srclabel->pixmap() == NULL) {
 		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
@@ -660,6 +696,9 @@ void ImagePro::createActions(){
 	enhanceAction = new QAction(QIcon("./Resources/images/enhance.png"), tr("图像增强"), this);
 	enhanceAction->setStatusTip(tr("直方图均衡化增强当前图片"));
 	connect(enhanceAction, &QAction::triggered, this, &ImagePro::enhancePicture);
+	//inpaint
+	doodleAction = new QAction(QIcon("./Resources/images/doodle.png"),tr("涂鸦"), this);
+	connect(doodleAction, &QAction::triggered, this, &ImagePro::doodlepicture);
 	statusBar();
 }
 
@@ -706,10 +745,10 @@ void ImagePro::createMenus(){
 	selectFun->addAction(flipAction);
 	selectFun->addAction(reverseAction);
 	selectFun->addAction(enhanceAction);
+	selectFun->addAction(doodleAction);
 	selectFun->addAction(tograyAction);
 	selectFun->addAction(tobinaryAction);
 	selectFun->addAction(showhisAction);
-	selectFun->addAction(contrastandbrightAction);
 	selectFun->addMenu(edgedetectionMenu);
 	selectFun->addMenu(FilterMenu);
 	//help
@@ -734,6 +773,7 @@ void ImagePro::createToolBars(){
 	editToolBar->addAction(rotateAction);
 	editToolBar->addAction(enhanceAction);
 	editToolBar->addAction(reverseAction);
+	editToolBar->addAction(doodleAction);
 	editToolBar->addAction(OpenCameraAction);
 	editToolBar->addAction(TakePhotoAction);
 }

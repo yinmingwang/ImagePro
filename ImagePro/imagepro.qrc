@@ -14,5 +14,6 @@
         <file>Resources/images/symmetric.png</file>
         <file>Resources/images/exchange.png</file>
         <file>Resources/images/enhance.png</file>
+        <file>Resources/images/doodle.png</file>
     </qresource>
 </RCC>
