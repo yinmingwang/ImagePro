@@ -30,7 +30,7 @@ public:
 	void createActions();
 	void createMenus();
 	void createToolBars();
-	//void scale(int, int);
+	void enhancePicture();
 	void rgbTogray();
 	void rgbTobinary();
 	void scaleBox();
@@ -106,6 +106,7 @@ private:
 	QAction *Sobel_Y_Action;
 	QAction *Sobel_XY_Action;
 	QAction *showhisAction;
+	QAction *enhanceAction;
 	//edge detection
 	QAction *LaplacianAction;
 	QAction *Scharr_X_Action;

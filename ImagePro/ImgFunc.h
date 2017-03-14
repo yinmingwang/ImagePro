@@ -269,3 +269,13 @@ inline Mat Fun_Bilateral_Filter(Mat srcimage, int image_size) {
 	bilateralFilter(srcimage, Bimage, image_size, image_size*2, image_size/2);
 	return Bimage;
 }
+inline Mat EnhanceImages(Mat srcimage) {
+	Mat enhanceimage;
+	vector<Mat> channel;
+	split(srcimage, channel);
+	for (int i = 0; i < srcimage.channels(); i++) {
+		equalizeHist(channel[i], channel[i]);
+	}
+	merge(channel, enhanceimage);
+	return enhanceimage;
+}

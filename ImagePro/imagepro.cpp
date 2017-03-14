@@ -35,6 +35,7 @@ int MeanValue = 2;
 int GaussianValue = 2;
 int MedianValue = 2;
 int BilateralValue = 2;
+bool cameraisopen = false;//判断摄像头是否打开
 QLabel *srclabel;
 QLabel *Prolabel;
 Mat frame;
@@ -129,15 +130,15 @@ void ImagePro::exitFile() {
 }
 void ImagePro::exchangepicture() {
 	if (Prolabel->pixmap() == NULL) {
-		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以交换"));
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以切换"));
 	}
 	else {
 		QImage image = Prolabel->pixmap()->toImage();
-		qimage = image;
 		srclabel->clear();
 		srclabel->setPixmap(QPixmap::fromImage(image));
 		srclabel->resize(QSize(image.width(), image.height()));
 		srclabel->show();
+		qimage = srclabel->pixmap()->toImage();
 		Prolabel->clear();
 	}
 }
@@ -500,39 +501,57 @@ void ImagePro::opencamera() {
 	VideoCapture capture(0);
 	if (!capture.isOpened())
 	{
-		return;
+		QMessageBox::warning(this, tr("警告"), tr("摄像头没有打开"));
 	}
-	bool stop = false;
-	while (!stop)
-	{
-		capture >> frame;
-		imshow("camera",frame);
-		if (waitKey(30) == 27) {
-			stop = true;
+	else {
+		bool stop = false;
+		cameraisopen = true;
+		while (!stop)
+		{
+			capture >> frame;
+			imshow("camera", frame);
+			if (waitKey(30) == 27) {
+				stop = true;
+			}
 		}
-	}
-	if (stop) {
-		capture.release();
+		if (stop) {
+			capture.release();
+		}
 	}
 }
 void ImagePro::takephoto() {
-	if (!frame.empty())
-	{
-		//imshow("test", frame);
-		Mat phtotoimage = Fun_Bilateral_Filter(frame, 10);
-		QImage image = Mat2QImage(phtotoimage);
-		qimage = image;
-		srclabel->setPixmap(QPixmap::fromImage(image));
-		srclabel->resize(QSize(image.width(), image.height()));
-		srclabel->show();
-		Prolabel->clear();
+	if (cameraisopen) {
+		if (!frame.empty())
+		{
+			//imshow("test", frame);
+			Mat phtotoimage = Fun_Bilateral_Filter(frame, 10);
+			QImage image = Mat2QImage(phtotoimage);
+			qimage = image;
+			srclabel->setPixmap(QPixmap::fromImage(image));
+			srclabel->resize(QSize(image.width(), image.height()));
+			srclabel->show();
+			Prolabel->clear();
+		}
 	}
-	else
-	{
-		return;
+	else{
+		QMessageBox::information(this, tr("提示"), tr("请先打开摄像头"));
 	}
 }
-
+void ImagePro::enhancePicture() {
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		Mat enhanceimg = EnhanceImages(image1);
+		image = Mat2QImage(enhanceimg);
+		Prolabel->setPixmap(QPixmap::fromImage(image));
+		Prolabel->resize(QSize(image.width(), image.height()));
+		Prolabel->alignment();
+		Prolabel->show();
+	}
+}
 void ImagePro::createActions(){
 	//openAction
 	openAction = new QAction(QIcon("./Resources/images/open.png"), tr("&打开"), this);
@@ -559,11 +578,11 @@ void ImagePro::createActions(){
 	exitAction->setStatusTip(tr("退出当前窗口"));
 	connect(exitAction, &QAction::triggered, this, &ImagePro::exitFile);
 	//select picture
-	selectpicAction = new QAction(tr("切换图像"), this);
+	selectpicAction = new QAction(QIcon("./Resources/images/exchange.png"), tr("切换图像"), this);
 	selectpicAction->setStatusTip(tr("切换处理的图片"));
 	connect(selectpicAction, &QAction::triggered, this, &ImagePro::exchangepicture);
 	//Open Camera
-	OpenCameraAction = new  QAction(tr("打开摄像头"), this);
+	OpenCameraAction = new  QAction(QIcon("./Resources/images/open_camera.png"),tr("打开摄像头"), this);
 	connect(OpenCameraAction, &QAction::triggered, this, &ImagePro::opencamera);
 	//take photo
 	TakePhotoAction = new QAction(QIcon("./Resources/images/takephoto.png"), tr("&拍照"), this);
@@ -588,15 +607,15 @@ void ImagePro::createActions(){
 	showhisAction->setStatusTip(tr("显示当前图像直方图"));
 	connect(showhisAction, &QAction::triggered, this, &ImagePro::showhistogram);
 	//rotate picture
-	rotateAction = new QAction(tr("旋转"), this);
+	rotateAction = new QAction(QIcon("./Resources/images/rotate.png"), tr("旋转"), this);
 	rotateAction->setStatusTip(tr("旋转当前图片"));
 	connect(rotateAction, &QAction::triggered, this, &ImagePro::rotateimage);
 	//flip picture
-	flipAction = new QAction(tr("镜像"), this);
+	flipAction = new QAction(QIcon("./Resources/images/symmetric.png"),tr("镜像"), this);
 	flipAction->setStatusTip(tr("生成镜像"));
 	connect(flipAction, &QAction::triggered, this, &ImagePro::flipimage);
 	//reverse color
-	reverseAction = new QAction(tr("反色"), this);
+	reverseAction = new QAction(QIcon("./Resources/images/inverse.png"),tr("反色"), this);
 	reverseAction->setStatusTip(tr("生成反色图像"));
 	connect(reverseAction, &QAction::triggered, this, &ImagePro::reverseimage);
 	//modifiy picture
@@ -637,7 +656,10 @@ void ImagePro::createActions(){
 	//Bilateral Filter
 	Bilateral_FilterAction = new QAction(tr("双边滤波"), this);
 	connect(Bilateral_FilterAction, &QAction::triggered, this, &ImagePro::Bilateral_Filter);
-	//
+	//enhance picture
+	enhanceAction = new QAction(QIcon("./Resources/images/enhance.png"), tr("图像增强"), this);
+	enhanceAction->setStatusTip(tr("直方图均衡化增强当前图片"));
+	connect(enhanceAction, &QAction::triggered, this, &ImagePro::enhancePicture);
 	statusBar();
 }
 
@@ -679,16 +701,17 @@ void ImagePro::createMenus(){
 	ScharrMenu->addAction(Scharr_Y_Action);
 	ScharrMenu->addAction(Scharr_XY_Action);
 	//selectmenu
-	selectFun->addMenu(edgedetectionMenu);
-	selectFun->addMenu(FilterMenu);
 	selectFun->addAction(scaleAction);
-	selectFun->addAction(tograyAction);
-	selectFun->addAction(tobinaryAction);
-	selectFun->addAction(showhisAction);
 	selectFun->addAction(rotateAction);
 	selectFun->addAction(flipAction);
 	selectFun->addAction(reverseAction);
+	selectFun->addAction(enhanceAction);
+	selectFun->addAction(tograyAction);
+	selectFun->addAction(tobinaryAction);
+	selectFun->addAction(showhisAction);
 	selectFun->addAction(contrastandbrightAction);
+	selectFun->addMenu(edgedetectionMenu);
+	selectFun->addMenu(FilterMenu);
 	//help
 	helpMenu = menuBar()->addMenu(tr("&帮助"));
 	/*helpMenu->addAction(aboutAction);
@@ -706,5 +729,11 @@ void ImagePro::createToolBars(){
 	editToolBar->addAction(copyAction);
 	//editToolBar->addAction(cutAction);
 	editToolBar->addAction(pasteAction);
+	editToolBar->addAction(selectpicAction);
+	editToolBar->addAction(scaleAction);
+	editToolBar->addAction(rotateAction);
+	editToolBar->addAction(enhanceAction);
+	editToolBar->addAction(reverseAction);
+	editToolBar->addAction(OpenCameraAction);
 	editToolBar->addAction(TakePhotoAction);
 }

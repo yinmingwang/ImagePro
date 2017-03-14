@@ -10,5 +10,9 @@
         <file>Resources/images/rotate.png</file>
         <file>Resources/images/gray.png</file>
         <file>Resources/images/takephoto.png</file>
+        <file>Resources/images/open_camera.png</file>
+        <file>Resources/images/symmetric.png</file>
+        <file>Resources/images/exchange.png</file>
+        <file>Resources/images/enhance.png</file>
     </qresource>
 </RCC>
