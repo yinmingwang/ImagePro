@@ -9,6 +9,8 @@
 #include <opencv2/core/core.hpp>
 #include<opencv2/opencv.hpp> 
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <QFileDialog>
 #include <qDebug>
 #include <iostream>
@@ -507,13 +509,17 @@ void ImagePro::opencamera() {
 		QMessageBox::warning(this, tr("警告"), tr("摄像头没有打开"));
 	}
 	else {
+		CascadeClassifier cascade, nestedCascade;
 		bool stop = false;
 		cameraisopen = true;
+		cascade.load("F:\\win8.1_softwareinstall\\opencv\\sources\\data\\haarcascades\\haarcascade_frontalface_alt.xml");
+		nestedCascade.load("F:\\win8.1_softwareinstall\\opencv\\sources\\data\\haarcascades\\haarcascade_eye.xml");
 		while (!stop)
 		{
 			capture >> frame;
-			imshow("camera", frame);
-			if (waitKey(30) == 27) {
+			detectAndDraw(frame, cascade, nestedCascade, 2, 0);
+			//imshow("camera", frame);
+			if (waitKey(30) >= 0) {
 				stop = true;
 			}
 		}
@@ -762,11 +768,9 @@ void ImagePro::createToolBars(){
 	fileToolBar = addToolBar(tr("&文件"));
 	fileToolBar->addAction(openAction);
 	fileToolBar->addAction(saveAction);
-	//fileToolBar->addAction(saveAsAction);
 	fileToolBar->addAction(exitAction);
 	editToolBar = addToolBar(tr("&编辑"));
 	editToolBar->addAction(copyAction);
-	//editToolBar->addAction(cutAction);
 	editToolBar->addAction(pasteAction);
 	editToolBar->addAction(selectpicAction);
 	editToolBar->addAction(scaleAction);
