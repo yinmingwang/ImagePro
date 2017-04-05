@@ -8,7 +8,6 @@
 #include <QLabel>
 #include <QScrollArea>
 #include <QPushButton>
-#include "inputimgdialog.h"
 using namespace cv;
 class ImagePro : public QMainWindow
 {
@@ -62,6 +61,8 @@ public:
 	void Median_Filter();
 	//bilateral
 	void Bilateral_Filter();
+	//find face
+	void FindFace();
 
 private:
 	//²Ëµ¥À¸ ¹¤¾ßÀ¸
@@ -109,6 +110,7 @@ private:
 	QAction *showhisAction;
 	QAction *enhanceAction;
 	QAction *doodleAction;
+	QAction *findfaceAction;
 	//edge detection
 	QAction *LaplacianAction;
 	QAction *Scharr_X_Action;

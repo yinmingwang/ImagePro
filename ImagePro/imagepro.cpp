@@ -20,6 +20,7 @@
 #include <QLabel> 
 #include <QPainter>
 #include <QTextCodec>
+#include <QHBoxLayout>
 #include "PicChange.h"
 #include "ImgFunc.h"
 using namespace std;
@@ -47,7 +48,7 @@ Mat frame;
 ImagePro::ImagePro(QWidget *parent)
 	: QMainWindow(parent)
 {
-	setWindowTitle(tr("Eric"));
+	setWindowTitle(tr("ERIC_IMP"));
 	setMaximumSize(1350, 700);
 	setMinimumSize(1350, 700);
 	srclabel = new QLabel(this);
@@ -84,7 +85,8 @@ void ImagePro::openFile()
 		//qDebug() << image1.cols << " " << image1.rows << endl;
 		if (image1.cols > 600 || image1.rows > 420) {
 			QMessageBox::information(this, tr("提示"), tr("图像过大，已经缩小为合适大小显示"));
-			images = image1;
+			//cv::resize(image1, images, Size(), 650, 600);
+			cv::resize(image1, images, cv::Size(650, 600), (0, 0), (0, 0), cv::INTER_LINEAR);
 		}
 		else {
 			images = image1;
@@ -220,8 +222,8 @@ void ImagePro::scaleimg() {
 		QImage image = srclabel->pixmap()->toImage();
 		//inputimgDialog *inputdia = new inputimgDialog;
 		Mat image1 = QImage2Mat(image);
-		rowsize = image1.rows / 2;
-		colsize = image1.cols / 2;
+		rowsize = image1.rows;
+		colsize = image1.cols;
 		//QString strQ = QString::fromLocal8Bit(str.c_str());
 		namedWindow("ScaleBox", 1);
 		createTrackbar("rows", "ScaleBox", &rowsize, image1.rows * 2, scale);
@@ -509,16 +511,18 @@ void ImagePro::opencamera() {
 		QMessageBox::warning(this, tr("警告"), tr("摄像头没有打开"));
 	}
 	else {
-		CascadeClassifier cascade, nestedCascade;
 		bool stop = false;
 		cameraisopen = true;
+		/*CascadeClassifier cascade, nestedCascade;
+		
+		
 		cascade.load("F:\\win8.1_softwareinstall\\opencv\\sources\\data\\haarcascades\\haarcascade_frontalface_alt.xml");
-		nestedCascade.load("F:\\win8.1_softwareinstall\\opencv\\sources\\data\\haarcascades\\haarcascade_eye.xml");
+		nestedCascade.load("F:\\win8.1_softwareinstall\\opencv\\sources\\data\\haarcascades\\haarcascade_eye.xml");*/
 		while (!stop)
 		{
 			capture >> frame;
-			detectAndDraw(frame, cascade, nestedCascade, 2, 0);
-			//imshow("camera", frame);
+			//detectAndDraw(frame, cascade, nestedCascade, 2, 0);
+			imshow("camera", frame);
 			if (waitKey(30) >= 0) {
 				stop = true;
 			}
@@ -533,7 +537,9 @@ void ImagePro::takephoto() {
 		if (!frame.empty())
 		{
 			//imshow("test", frame);
-			Mat phtotoimage = Fun_Bilateral_Filter(frame, 10);
+			Mat cimage;
+			cv::resize(frame, cimage, cv::Size(650, 600), (0, 0), (0, 0), cv::INTER_LINEAR);
+			Mat phtotoimage = Fun_Bilateral_Filter(cimage, 5);
 			QImage image = Mat2QImage(phtotoimage);
 			qimage = image;
 			srclabel->setPixmap(QPixmap::fromImage(image));
@@ -592,6 +598,19 @@ void ImagePro::enhancePicture() {
 		Prolabel->resize(QSize(image.width(), image.height()));
 		Prolabel->alignment();
 		Prolabel->show();
+	}
+}
+void ImagePro::FindFace() {
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
+	}
+	else {
+		QImage image = srclabel->pixmap()->toImage();
+		Mat image1 = QImage2Mat(image);
+		CascadeClassifier cascade, nestedCascade;
+		cascade.load("F:\\win8.1_softwareinstall\\opencv\\sources\\data\\haarcascades\\haarcascade_frontalface_alt.xml");
+		nestedCascade.load("F:\\win8.1_softwareinstall\\opencv\\sources\\data\\haarcascades\\haarcascade_eye.xml");
+		detectAndDraw(image1, cascade, nestedCascade, 2, 0);
 	}
 }
 void ImagePro::createActions(){
@@ -705,6 +724,9 @@ void ImagePro::createActions(){
 	//inpaint
 	doodleAction = new QAction(QIcon("./Resources/images/doodle.png"),tr("涂鸦"), this);
 	connect(doodleAction, &QAction::triggered, this, &ImagePro::doodlepicture);
+	//face
+	findfaceAction = new QAction(QIcon("./Resources/images/findface.png"), tr("人脸检测"), this);
+	connect(findfaceAction, &QAction::triggered, this, &ImagePro::FindFace);
 	statusBar();
 }
 
@@ -751,6 +773,7 @@ void ImagePro::createMenus(){
 	selectFun->addAction(flipAction);
 	selectFun->addAction(reverseAction);
 	selectFun->addAction(enhanceAction);
+	selectFun->addAction(findfaceAction);
 	selectFun->addAction(doodleAction);
 	selectFun->addAction(tograyAction);
 	selectFun->addAction(tobinaryAction);
@@ -780,4 +803,5 @@ void ImagePro::createToolBars(){
 	editToolBar->addAction(doodleAction);
 	editToolBar->addAction(OpenCameraAction);
 	editToolBar->addAction(TakePhotoAction);
+	editToolBar->addAction(findfaceAction);
 }

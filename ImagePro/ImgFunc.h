@@ -280,10 +280,10 @@ inline Mat EnhanceImages(Mat srcimage) {
 	return enhanceimage;
 }
 //detect
-inline void detectAndDraw(Mat& img, CascadeClassifier& cascade,
+inline Mat detectAndDraw(Mat& srcimg, CascadeClassifier& cascade,
 	CascadeClassifier& nestedCascade,
-	double scale, bool tryflip)
-{
+	double scale, bool tryflip) {
+	Mat img = srcimg.clone();
 	int i = 0;
 	double t = 0;
 	//建立用于存放人脸的向量容器
@@ -336,7 +336,6 @@ inline void detectAndDraw(Mat& img, CascadeClassifier& cascade,
 		}
 	}
 	t = (double)cvGetTickCount() - t;
-	//   qDebug( "detection time = %g ms\n", t/((double)cvGetTickFrequency()*1000.) );
 	for (vector<Rect>::const_iterator r = faces.begin(); r != faces.end(); r++, i++)
 	{
 		Mat smallImgROI;
@@ -361,7 +360,7 @@ inline void detectAndDraw(Mat& img, CascadeClassifier& cascade,
 		if (nestedCascade.empty())
 			continue;
 		smallImgROI = smallImg(*r);
-		//同样方法检测人眼
+		/*//同样方法检测人眼
 		nestedCascade.detectMultiScale(smallImgROI, nestedObjects,
 			1.1, 2, 0
 			//|CV_HAAR_FIND_BIGGEST_OBJECT
@@ -375,7 +374,8 @@ inline void detectAndDraw(Mat& img, CascadeClassifier& cascade,
 			center.y = cvRound((r->y + nr->y + nr->height*0.5)*scale);
 			radius = cvRound((nr->width + nr->height)*0.25*scale);
 			circle(img, center, radius, color, 3, 8, 0);
-		}
+		}*/
 	}
-	imshow("识别结果", img);
+	imshow("face", img);
+	return img;
 }

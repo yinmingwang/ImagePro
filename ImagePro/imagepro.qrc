@@ -15,5 +15,6 @@
         <file>Resources/images/exchange.png</file>
         <file>Resources/images/enhance.png</file>
         <file>Resources/images/doodle.png</file>
+        <file>Resources/images/findface.png</file>
     </qresource>
 </RCC>
