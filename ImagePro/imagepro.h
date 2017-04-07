@@ -63,9 +63,10 @@ public:
 	void Bilateral_Filter();
 	//find face
 	void FindFace();
-
+	//whitening
+	void Whitening();
 private:
-	//菜单栏 工具栏
+	//菜单栏
 	QMenu *fileMenu;
 	QMenu *editMenu;
 	QMenu *helpMenu;
@@ -128,6 +129,8 @@ private:
 	//bilateral
 	QAction *Bilateral_FilterAction;
 	//inputimgDialog *inputdia;
+	//whitening
+	QAction *whiteningAction;
 	ImagePro *ui;
 	QScrollArea *srcscroll;
 	QScrollArea *Proscroll;

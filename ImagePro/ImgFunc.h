@@ -16,8 +16,15 @@ inline Mat Resize(Mat srcimg, int width, int height){
 	return Reimg;
 }
 inline Mat Togray(Mat srcimage) {
-	Mat grayimage;
-	cvtColor(srcimage, grayimage, CV_BGR2GRAY);
+	Mat grayimage = cv::Mat::zeros(srcimage.size(), CV_8UC1);
+	vector<Mat> channel;
+	split(srcimage, channel);
+	for (int i = 0; i < srcimage.rows; i++) {
+		for (int j = 0; j < srcimage.cols; j++) {
+			grayimage.at<uchar>(i, j) = 0.11*channel[0].at<uchar>(i, j) + 0.59*channel[1].at<uchar>(i, j) + 0.3*channel[2].at<uchar>(i, j);
+		}
+	}
+	//cvtColor(srcimage, grayimage, CV_BGR2GRAY);
 	return grayimage;
 }
 inline Mat Tobinary(Mat srcimage) {
@@ -143,7 +150,27 @@ inline Mat rotation(Mat srcImg, double angle) {
 	return tempImg;
 }
 inline Mat FlipImages(Mat srcimage) {
+	/*vector<Mat> channel;
+	vector<Mat> fchannel;
+	Mat tempimage;
 	Mat flipimage;
+	tempimage.create(srcimage.size(), srcimage.type());
+	split(srcimage, channel);
+	split(tempimage, fchannel);
+	//qDebug() << srcimage.channels() << endl;
+	for (int k = 0; k < 3; k++) {
+		for (int i = 0; i < srcimage.cols; i++) {
+			int u = srcimage.cols - i - 1;
+			for (int j = 0; j < srcimage.rows; j++) {
+				fchannel[k].at<uchar>(j, i) = channel[k].at<uchar>(j, u);
+			}
+		}
+	}
+	merge(fchannel, flipimage);
+	return flipimage;
+*/
+	
+		Mat flipimage;
 	flipimage.create(srcimage.size(), srcimage.type());
 	Mat map_x;
 	Mat map_y;

@@ -55,11 +55,14 @@ ImagePro::ImagePro(QWidget *parent)
 	Prolabel = new QLabel(this);
 	srcscroll = new QScrollArea(this);
 	Proscroll = new QScrollArea(this);
+	srcscroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	Proscroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	srcscroll->setGeometry(10, 60, 650, 600);
 	Proscroll->setGeometry(670, 60, 650, 600);
 	srcscroll->setWidget(srclabel);
 	Proscroll->setWidget(Prolabel);
 	srcscroll->show();
+	Proscroll->show();
 	createActions();
 	createMenus();
 	createToolBars();
@@ -513,15 +516,9 @@ void ImagePro::opencamera() {
 	else {
 		bool stop = false;
 		cameraisopen = true;
-		/*CascadeClassifier cascade, nestedCascade;
-		
-		
-		cascade.load("F:\\win8.1_softwareinstall\\opencv\\sources\\data\\haarcascades\\haarcascade_frontalface_alt.xml");
-		nestedCascade.load("F:\\win8.1_softwareinstall\\opencv\\sources\\data\\haarcascades\\haarcascade_eye.xml");*/
 		while (!stop)
 		{
 			capture >> frame;
-			//detectAndDraw(frame, cascade, nestedCascade, 2, 0);
 			imshow("camera", frame);
 			if (waitKey(30) >= 0) {
 				stop = true;
@@ -536,7 +533,6 @@ void ImagePro::takephoto() {
 	if (cameraisopen) {
 		if (!frame.empty())
 		{
-			//imshow("test", frame);
 			Mat cimage;
 			cv::resize(frame, cimage, cv::Size(650, 600), (0, 0), (0, 0), cv::INTER_LINEAR);
 			Mat phtotoimage = Fun_Bilateral_Filter(cimage, 5);
@@ -613,6 +609,19 @@ void ImagePro::FindFace() {
 		detectAndDraw(image1, cascade, nestedCascade, 2, 0);
 	}
 }
+void ImagePro::Whitening() {
+	if (srclabel->pixmap() == NULL) {
+		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以美白"));
+	}
+	else{
+		Mat image1 = QImage2Mat(qimage);
+		Mat whiteningimage = Fun_Bilateral_Filter(image1, 8);
+		QImage images = Mat2QImage(whiteningimage);
+		Prolabel->setPixmap(QPixmap::fromImage(images));
+		Prolabel->resize(QSize(images.width(), images.height()));
+		Prolabel->show();
+	}
+}
 void ImagePro::createActions(){
 	//openAction
 	openAction = new QAction(QIcon("./Resources/images/open.png"), tr("&打开"), this);
@@ -676,7 +685,7 @@ void ImagePro::createActions(){
 	flipAction->setStatusTip(tr("生成镜像"));
 	connect(flipAction, &QAction::triggered, this, &ImagePro::flipimage);
 	//reverse color
-	reverseAction = new QAction(QIcon("./Resources/images/inverse.png"),tr("反色"), this);
+	reverseAction = new QAction(QIcon("./Resources/images/inverse.png"),tr("反色滤镜"), this);
 	reverseAction->setStatusTip(tr("生成反色图像"));
 	connect(reverseAction, &QAction::triggered, this, &ImagePro::reverseimage);
 	//modifiy picture
@@ -723,27 +732,34 @@ void ImagePro::createActions(){
 	connect(enhanceAction, &QAction::triggered, this, &ImagePro::enhancePicture);
 	//inpaint
 	doodleAction = new QAction(QIcon("./Resources/images/doodle.png"),tr("涂鸦"), this);
+	doodleAction->setStatusTip(tr("对当前图像涂鸦"));
 	connect(doodleAction, &QAction::triggered, this, &ImagePro::doodlepicture);
 	//face
 	findfaceAction = new QAction(QIcon("./Resources/images/findface.png"), tr("人脸检测"), this);
+	findfaceAction->setStatusTip(tr("标记当前图像中的人脸"));
 	connect(findfaceAction, &QAction::triggered, this, &ImagePro::FindFace);
+	//whitening
+	whiteningAction = new QAction(QIcon("./Resources/images/whitening.png"), tr("一键美白"), this);
+	whiteningAction->setStatusTip(tr("一键美白"));
+	connect(whiteningAction, &QAction::triggered, this, &ImagePro::Whitening);
 	statusBar();
 }
 
 void ImagePro::createMenus(){
-	//fileMenus
 	fileMenu = menuBar()->addMenu(tr("&文件"));
+	editMenu = menuBar()->addMenu(tr("&编辑"));
+	selectFun = menuBar()->addMenu(tr("&工具"));
+	helpMenu = menuBar()->addMenu(tr("&帮助"));
+	//fileMenus
 	fileMenu->addAction(openAction);
 	fileMenu->addAction(saveAction);
 	fileMenu->addAction(exitAction);
 	//edit
-	editMenu = menuBar()->addMenu(tr("&编辑"));
 	editMenu->addAction(copyAction);
 	editMenu->addAction(pasteAction);
 	editMenu->addAction(selectpicAction);
 	editMenu->addAction(OpenCameraAction);
 	//function
-	selectFun = menuBar()->addMenu(tr("&工具"));
 	SobelMenu = new QMenu(tr("Sobel"));
 	ScharrMenu = new QMenu(tr("Scharr"));
 	FilterMenu = new QMenu(tr("滤波"));
@@ -774,6 +790,7 @@ void ImagePro::createMenus(){
 	selectFun->addAction(reverseAction);
 	selectFun->addAction(enhanceAction);
 	selectFun->addAction(findfaceAction);
+	selectFun->addAction(whiteningAction);
 	selectFun->addAction(doodleAction);
 	selectFun->addAction(tograyAction);
 	selectFun->addAction(tobinaryAction);
@@ -781,7 +798,6 @@ void ImagePro::createMenus(){
 	selectFun->addMenu(edgedetectionMenu);
 	selectFun->addMenu(FilterMenu);
 	//help
-	helpMenu = menuBar()->addMenu(tr("&帮助"));
 	/*helpMenu->addAction(aboutAction);
 	helpMenu->addAction(aboutImageProAction);*/
 	
@@ -801,7 +817,9 @@ void ImagePro::createToolBars(){
 	editToolBar->addAction(enhanceAction);
 	editToolBar->addAction(reverseAction);
 	editToolBar->addAction(doodleAction);
+	editToolBar->addAction(findfaceAction);
+	editToolBar->addAction(whiteningAction);
 	editToolBar->addAction(OpenCameraAction);
 	editToolBar->addAction(TakePhotoAction);
-	editToolBar->addAction(findfaceAction);
 }
+
