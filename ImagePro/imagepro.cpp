@@ -426,8 +426,10 @@ void ImagePro::Box_Filter() {
 		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
 	} 
 	else {
-		namedWindow("Box Filter", 1);
+		namedWindow("Box Filter", 0);
+		cvResizeWindow("Box Filter", 480, 100);
 		createTrackbar("Value", "Box Filter", &BoxValue, 50, Trackbar_BoxFilter);
+		Trackbar_BoxFilter(BoxValue, 0);
 	}
 }
 //Mean
@@ -444,8 +446,10 @@ void ImagePro::Mean_Filter() {
 		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
 	}
 	else {
-		namedWindow("Mean Filter", 1);
+		namedWindow("Mean Filter", 0);
+		cvResizeWindow("Mean Filter", 480, 100);
 		createTrackbar("Value", "Mean Filter", &MeanValue, 50, Trackbar_MeanFilter);
+		Trackbar_MeanFilter(MeanValue, 0);
 	}
 	
 }
@@ -464,8 +468,10 @@ void ImagePro::Gaussian_Filter() {
 		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
 	}
 	else {
-		namedWindow("Gaussian Filter", 1);
+		namedWindow("Gaussian Filter", 0);
+		cvResizeWindow("Gaussian Filter", 480, 100);
 		createTrackbar("Value", "Gaussian Filter", &GaussianValue, 50, Trackbar_GaussianFilter);
+		Trackbar_GaussianFilter(GaussianValue, 0);
 	}	
 }
 //Median
@@ -482,8 +488,10 @@ void ImagePro::Median_Filter() {
 		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
 	}
 	else {
-		namedWindow("Median Filter", 1);
+		namedWindow("Median Filter", 0);
+		cvResizeWindow("Median Filter", 480, 100);
 		createTrackbar("Value", "Median Filter", &MedianValue, 50, Trackbar_MedianFilter);
+		Trackbar_MedianFilter(MedianValue, 0);
 	}
 }
 	
@@ -502,8 +510,10 @@ void ImagePro::Bilateral_Filter() {
 		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
 	}
 	else {
-		namedWindow("Bilateral Filter", 1);
+		namedWindow("Bilateral Filter", 0);
+		cvResizeWindow("Bilateral Filter", 480, 100);
 		createTrackbar("Value", "Bilateral Filter", &BilateralValue, 50, Trackbar_BilateralFilter);
+		Trackbar_BilateralFilter(BilateralValue, 0);
 	}
 }
 
