@@ -61,8 +61,6 @@ public:
 	void Median_Filter();
 	//bilateral
 	void Bilateral_Filter();
-	//find face
-	void FindFace();
 	//whitening
 	void Whitening();
 private:
@@ -111,7 +109,6 @@ private:
 	QAction *showhisAction;
 	QAction *enhanceAction;
 	QAction *doodleAction;
-	QAction *findfaceAction;
 	//edge detection
 	QAction *LaplacianAction;
 	QAction *Scharr_X_Action;

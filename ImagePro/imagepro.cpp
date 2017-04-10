@@ -606,19 +606,6 @@ void ImagePro::enhancePicture() {
 		Prolabel->show();
 	}
 }
-void ImagePro::FindFace() {
-	if (srclabel->pixmap() == NULL) {
-		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以处理"));
-	}
-	else {
-		QImage image = srclabel->pixmap()->toImage();
-		Mat image1 = QImage2Mat(image);
-		CascadeClassifier cascade, nestedCascade;
-		cascade.load("F:\\win8.1_softwareinstall\\opencv\\sources\\data\\haarcascades\\haarcascade_frontalface_alt.xml");
-		nestedCascade.load("F:\\win8.1_softwareinstall\\opencv\\sources\\data\\haarcascades\\haarcascade_eye.xml");
-		detectAndDraw(image1, cascade, nestedCascade, 2, 0);
-	}
-}
 void ImagePro::Whitening() {
 	if (srclabel->pixmap() == NULL) {
 		QMessageBox::warning(this, tr("警告"), tr("当前没有图像可以美白"));
@@ -741,13 +728,9 @@ void ImagePro::createActions(){
 	enhanceAction->setStatusTip(tr("直方图均衡化增强当前图片"));
 	connect(enhanceAction, &QAction::triggered, this, &ImagePro::enhancePicture);
 	//inpaint
-	doodleAction = new QAction(QIcon("./Resources/images/doodle.png"),tr("涂鸦"), this);
-	doodleAction->setStatusTip(tr("对当前图像涂鸦"));
+	doodleAction = new QAction(QIcon("./Resources/images/doodle.png"),tr("图像掩盖"), this);
+	doodleAction->setStatusTip(tr("掩盖部分图像"));
 	connect(doodleAction, &QAction::triggered, this, &ImagePro::doodlepicture);
-	//face
-	findfaceAction = new QAction(QIcon("./Resources/images/findface.png"), tr("人脸检测"), this);
-	findfaceAction->setStatusTip(tr("标记当前图像中的人脸"));
-	connect(findfaceAction, &QAction::triggered, this, &ImagePro::FindFace);
 	//whitening
 	whiteningAction = new QAction(QIcon("./Resources/images/whitening.png"), tr("一键美白"), this);
 	whiteningAction->setStatusTip(tr("一键美白"));
@@ -799,7 +782,6 @@ void ImagePro::createMenus(){
 	selectFun->addAction(flipAction);
 	selectFun->addAction(reverseAction);
 	selectFun->addAction(enhanceAction);
-	selectFun->addAction(findfaceAction);
 	selectFun->addAction(whiteningAction);
 	selectFun->addAction(doodleAction);
 	selectFun->addAction(tograyAction);
@@ -807,9 +789,6 @@ void ImagePro::createMenus(){
 	selectFun->addAction(showhisAction);
 	selectFun->addMenu(edgedetectionMenu);
 	selectFun->addMenu(FilterMenu);
-	//help
-	/*helpMenu->addAction(aboutAction);
-	helpMenu->addAction(aboutImageProAction);*/
 	
 	
 }
@@ -827,7 +806,6 @@ void ImagePro::createToolBars(){
 	editToolBar->addAction(enhanceAction);
 	editToolBar->addAction(reverseAction);
 	editToolBar->addAction(doodleAction);
-	editToolBar->addAction(findfaceAction);
 	editToolBar->addAction(whiteningAction);
 	editToolBar->addAction(OpenCameraAction);
 	editToolBar->addAction(TakePhotoAction);
