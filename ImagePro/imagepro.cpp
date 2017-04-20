@@ -197,17 +197,13 @@ void ImagePro::showhistogram(){
 	}
 }
 void  scale(int w, void*) {
-	
 	Mat image1 = QImage2Mat(qimage);
-	//imshow("hello", image1);
 	//Mat scaleimage;
 	if (colsize < 10)
 	{
-		//QMessageBox::warning(NULL,QObject::tr("高度"), QObject::tr("高度不能小于10"));
 		colsize = 10;
 	}
 	else if (rowsize < 10) {
-		//QMessageBox::warning(NULL, QObject::tr("宽度"), QObject::tr("宽度不能小于10"));
 		rowsize = 10;
 	}
  	cv::resize(image1, image1, Size(colsize, rowsize), 0, 0, 3);
@@ -215,7 +211,6 @@ void  scale(int w, void*) {
 	Prolabel->setPixmap(QPixmap::fromImage(image));
 	Prolabel->resize(QSize(image.width(), image.height()));
 	Prolabel->show();
-	//imshow("test", image1);
 }
 void ImagePro::scaleimg() {
 	if (srclabel->pixmap() == NULL) {
@@ -223,11 +218,9 @@ void ImagePro::scaleimg() {
 	}
 	else {
 		QImage image = srclabel->pixmap()->toImage();
-		//inputimgDialog *inputdia = new inputimgDialog;
 		Mat image1 = QImage2Mat(image);
 		rowsize = image1.rows;
 		colsize = image1.cols;
-		//QString strQ = QString::fromLocal8Bit(str.c_str());
 		namedWindow("ScaleBox", 1);
 		createTrackbar("rows", "ScaleBox", &rowsize, image1.rows * 2, scale);
 		createTrackbar("cols", "ScaleBox", &colsize, image1.cols * 2, scale);
